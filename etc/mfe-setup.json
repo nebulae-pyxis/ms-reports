@@ -2,35 +2,43 @@
     {
         "name": "reports",
         "src": "frontend/emi/reports",
+        "assets" :"frontend/emi/assets/devices-location",
+        "indexHeadAmends" : [
+            "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
+            "<script src='./assets/devices-location/markerclusterer.js'></script>"
+        ],
         "groups": [
             {
-              "id": "GROUP_NAME",
+              "id": "BUSINESSES",
               "icon": "location_searching",
               "translate": {
-                "en": "Group Name",
-                "es": "Nombre de Grupo"
+                "en": "Unidades de negocio",
+                "es": "Business units"
               },
               "priority": 1000
             }
           ],
         "contents": [
             {
-                "groupId": "GROUP_NAME",
-                "id": "reports",
-                "icon": "dashboard",
+                "groupId": "BUSINESSES",
+                "id": "reports-coverage",
+                "icon": "library_books",
                 "translate": {
-                    "en": "reports_en",
-                    "es": "reports_es"
+                    "en": "Coverage",
+                    "es": "cobertura"
                 },
                 "navURL": "/reports",
                 "path": "reports",
                 "loadChildren": "./main/content/reports/reports.module#reportsModule",
                 "priority": 1000,
-                "roles" : ["developer"],
+                "roles" : ["SYSADMIN"],
                 "default" : false
             }            
         ],
-        "preBuildCommands": [],
+        "preBuildCommands": [
+            "npm install @types/googlemaps --save",
+            "npm install @types/markerclustererplus --save" 
+        ],
         "environmentVars": {
         }
     }
