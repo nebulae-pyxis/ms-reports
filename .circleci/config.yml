@@ -107,7 +107,7 @@ jobs:
             mkdir -p ~/nebulae/api
             gitChanged api || ( cd  ~/nebulae/api/ && git clone --depth=1 https://github.com/nebulae-pyxis/emi-gateway  ~/nebulae/api/shell )      
             gitChanged api || ls ~/nebulae/api/shell
-            gitChanged api || export DOCKERHUB_IMAGE=emi-gateway
+            gitChanged api || export DOCKERHUB_IMAGE=emigateway
             gitChanged api || export API_SHELL_PATH=/home/circleci/nebulae/api/
             gitChanged api || ( cd ~/nebulae/api/shell && sh ~/nebulae/api/shell/deployment/docker/build-docker-hub.sh  && cd ~/nebulae/repo/ )
             gitChanged api || echo $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE@$(docker pull $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest | grep sha256 | cut -c 9-) > ~/nebulae/api/DOCKERHUB_GENERATED_IMAGE_DIGEST
@@ -159,7 +159,7 @@ jobs:
             mkdir ~/nebulae/backend
             cp ~/nebulae/go/mbinit ~/nebulae/repo/backend/reports/
             export DOCKERHUB_IMAGE=reports.backend.reports
-            export DOCKERHUB_TAG=0.0.1
+            export DOCKERHUB_TAG=0.0.2
             gitChanged backend/reports || docker build  -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest ~/nebulae/repo/backend/reports/
             gitChanged backend/reports || docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
             gitChanged backend/reports || docker push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG
