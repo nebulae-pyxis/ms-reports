@@ -1,6 +1,6 @@
 "use strict";
 
-const helloWorld = require("../../domain/HelloWorld")();
+const reports = require("../../domain/reports");
 const broker = require("../../tools/broker/BrokerFactory")();
 const Rx = require("rxjs");
 const jsonwebtoken = require("jsonwebtoken");
@@ -94,9 +94,9 @@ class GraphQlService {
       //decode and verify the jwt token
       mergeMap(message =>
         Rx.of(message).pipe(
-          map(message => ({ authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey), message, failedValidations: [] }))
-          ,catchError(err =>
-            helloWorld.errorHandler$(err).pipe(
+          map(message => ({ authToken: jsonwebtoken.verify(message.data.jwt, jwtPublicKey), message, failedValidations: [] })),
+          catchError(err =>
+            reports.cqrs.errorHandler$(err).pipe(
               map(response => ({
                 errorResponse: { response, correlationId: message.id, replyTo: message.attributes.replyTo },
                 failedValidations: ['JWT']
@@ -160,8 +160,8 @@ class GraphQlService {
     return {
       //Sample incoming request, please remove
       "emi-gateway.graphql.query.getHelloWorldFromreports": {
-        fn: helloWorld.getHelloWorld$,
-        obj: helloWorld
+        fn: reports.cqrs.getHelloWorld$,
+        obj: reports.cqrs
       },      
     };
   }

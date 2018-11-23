@@ -1,7 +1,7 @@
 "use strict";
 const Rx = require("rxjs");
 const eventSourcing = require("../../tools/EventSourcing")();
-const helloWorld = require("../../domain/HelloWorld")();
+const reports = require('../../domain/reports');
 const { map, switchMap, filter, mergeMap, concatMap } = require('rxjs/operators');
 /**
  * Singleton instance
@@ -37,8 +37,8 @@ class EventStoreService {
     console.log("EventStoreService starting ...");
 
     return Rx.from(this.aggregateEventsArray).pipe(
-      map(aggregateEvent => ({ ...aggregateEvent, onErrorHandler, onCompleteHandler }))
-      ,map(params => this.subscribeEventHandler(params))
+      map(aggregateEvent => ({ ...aggregateEvent, onErrorHandler, onCompleteHandler })),
+      map(params => this.subscribeEventHandler(params))
     );      
   }
 
@@ -65,9 +65,9 @@ class EventStoreService {
     const subscription =
       //MANDATORY:  AVOIDS ACK REGISTRY DUPLICATIONS
       eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType).pipe(
-        mergeMap(() => eventSourcing.eventStore.getEventListener$(aggregateType, mbeKey))
-        ,filter(evt => evt.et === eventType)
-        ,mergeMap(evt => Rx.concat(
+        mergeMap(() => eventSourcing.eventStore.getEventListener$(aggregateType, mbeKey)),
+        filter(evt => evt.et === eventType),
+        mergeMap(evt => Rx.concat(
           handler.fn.call(handler.obj, evt),
           //MANDATORY:  ACKWOWLEDGE THIS EVENT WAS PROCESSED
           eventSourcing.eventStore.acknowledgeEvent$(evt, mbeKey),
@@ -105,9 +105,9 @@ class EventStoreService {
     const handler = this.functionMap[eventType];
     //MANDATORY:  AVOIDS ACK REGISTRY DUPLICATIONS
     return eventSourcing.eventStore.ensureAcknowledgeRegistry$(aggregateType).pipe(
-      switchMap(() => eventSourcing.eventStore.retrieveUnacknowledgedEvents$(aggregateType, mbeKey))
-      ,filter(evt => evt.et === eventType)
-      ,concatMap(evt => Rx.concat(
+      switchMap(() => eventSourcing.eventStore.retrieveUnacknowledgedEvents$(aggregateType, mbeKey)),
+      filter(evt => evt.et === eventType),
+      concatMap(evt => Rx.concat(
         handler.fn.call(handler.obj, evt),
         //MANDATORY:  ACKWOWLEDGE THIS EVENT WAS PROCESSED
         eventSourcing.eventStore.acknowledgeEvent$(evt, mbeKey)
@@ -123,9 +123,9 @@ class EventStoreService {
     return {
 
       //Sample for handling event-sourcing events, please remove
-      HelloWorldEvent: {
-        fn: helloWorld.handleHelloWorld$,
-        obj: helloWorld
+      CivicaCardReload: {
+        fn: reports.eventSourcing.handleCivicaCardReload$,
+        obj: reports.cqrs
       },
 
     };
@@ -139,8 +139,8 @@ class EventStoreService {
 
       //Sample for assoc events and aggregates, please remove
       {
-        aggregateType: "HelloWorld",
-        eventType: "HelloWorldEvent"
+        aggregateType: "CivicaCard",
+        eventType: "CivicaCardReload"
       },
 
     ]

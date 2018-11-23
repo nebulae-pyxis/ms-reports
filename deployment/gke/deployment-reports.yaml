@@ -13,7 +13,7 @@ spec:
         app: reports
     spec:      
       containers:
-      - image: nebulaepyxis/reports.backend.reports:0.0.3
+      - image: nebulaepyxis/reports.backend.reports:0.0.4
         name: reports
         volumeMounts:
         - name: google-application-credentials
