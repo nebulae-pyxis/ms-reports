@@ -2,7 +2,7 @@
     {
         "name": "reports",
         "src": "frontend/emi/reports",
-        "assets" :"frontend/emi/assets/devices-location",
+        "assets" :"frontend/emi/assets/coverage-reports",
         "indexHeadAmends" : [
             "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
             "<script src='./assets/coverage-reports/markerclusterer.js'></script>"
