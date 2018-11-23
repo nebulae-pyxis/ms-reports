@@ -5,7 +5,7 @@
         "assets" :"frontend/emi/assets/devices-location",
         "indexHeadAmends" : [
             "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
-            "<script src='./assets/devices-location/markerclusterer.js'></script>"
+            "<script src='./assets/coverage-reports/markerclusterer.js'></script>"
         ],
         "groups": [
             {
