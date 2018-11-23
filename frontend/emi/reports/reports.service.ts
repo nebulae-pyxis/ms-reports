@@ -22,7 +22,7 @@ export class reportsService {
     return this.gateway.apollo
       .watchQuery<any>({
         query: getHelloWorld,
-        fetchPolicy: "network-only"
+        fetchPolicy: 'network-only'
       })
       .valueChanges.map(
         resp => resp.data.getHelloWorldFromreports.sn
@@ -37,7 +37,7 @@ export class reportsService {
     .subscribe({
       query: reportsHelloWorldSubscription
     })
-    .map(resp => resp.data.EventSourcingMonitorHelloWorldSubscription.sn);
+    .map(resp => resp.data.reportsHelloWorldSubscription.sn);
 }
 
 }
