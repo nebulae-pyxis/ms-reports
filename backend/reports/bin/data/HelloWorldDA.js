@@ -9,6 +9,7 @@ const { map } = require('rxjs/operators');
 
 
 
+
 class HelloWorldDA {
 
   static start$(mongoDbInstance) {
