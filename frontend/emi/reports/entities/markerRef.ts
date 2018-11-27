@@ -1,6 +1,7 @@
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
 /// <reference types="googlemaps" />
+
 import { MapRef } from './agmMapRef';
 
 export class Vehicle {
