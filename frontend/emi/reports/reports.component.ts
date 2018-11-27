@@ -12,8 +12,9 @@ import {MatSnackBar} from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
 import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent } from './entities/markerRef';
-import { of, combineLatest, Observable } from 'rxjs';
+import { of, combineLatest, Observable, forkJoin, concat } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
+import { mergeMap } from 'rxjs-compat/operator/mergeMap';
 
 
 
@@ -50,9 +51,9 @@ export class reportsComponent implements OnInit, OnDestroy {
   filteredPosIdOptions: Observable<string[]>;
   SYS_ADMIN = 'SYSADMIN';
 
+  productOpstions: string[];
 
-
-
+  subscriptions: Subscription[] = [];
 
   constructor(
     private reportService: reportsService,
@@ -63,25 +64,69 @@ export class reportsComponent implements OnInit, OnDestroy {
       this.translationLoader.loadTranslations(english, spanish);
   }
 
-
-
   ngOnInit() {
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
     this.initMap();
+
+    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
+
+    this.subscriptions.push(
+      this.filterForm.get('businessId').valueChanges
+      .pipe(
+        tap( newSelectedBusinessId => {
+          this.productOpstions =
+            (this.isSystemAdmin && newSelectedBusinessId == null)
+              ? this.businessVsProducts.reduce((acc, item) => {
+                acc.push(...item.products); return acc;
+              }, [])
+              : this.businessVsProducts.find(e => e.businessId === newSelectedBusinessId).products;
+          this.productOpstions = this.productOpstions.filter(this.onlyUnique);
+          if (!this.productOpstions.includes(this.filterForm.get('product').value)){
+            this.filterForm.get('product').setValue(null);
+          }
+          this.filterForm.get('posId').setValue(null);
+        })
+      )
+      .subscribe(r => {}, error => console.error(), () => {})
+    );
+
+
+  concat(
+
+    of(this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN))
+    .pipe(
+      tap((isSysAdm) => this.isSystemAdmin = isSysAdm )
+    ),
 
     this.reportService.getBusinessAndProducts$()
     .pipe(
       map(r => JSON.parse(JSON.stringify(r))),
-      tap(r => console.log(r))
+      map((result: any[]) => result.reduce((acc, item) => {
+        acc.push({ businessName: item.name, businessId: item._id, products: item.products });
+        return acc;
+      }, [])),
+      map( (businessOptions: any[]) => {
+        if (this.isSystemAdmin){
+          businessOptions.push({ businessName: 'ALL-TODAS', businessId: null, products: [] });
+        }
+        return businessOptions;
+      }),
+      tap(r => console.log('this.reportService.getBusinessAndProducts$()', r)),
+      tap(r => this.businessVsProducts = r )
     )
-    .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
 
-    this.reportService.getPosItems$('businessId', 'recarga_civica', null )
-    .pipe(
-      map(r => JSON.parse(JSON.stringify(r))),
-      tap(r => console.log(r))
-    )
-    .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
+  )
+  .subscribe(r => {}, err => {}, () => {});
+
+
+
+
+
+    // this.reportService.getPosItems$('businessId', 'recarga_civica', null )
+    // .pipe(
+    //   map(r => JSON.parse(JSON.stringify(r))),
+    //   tap(r => console.log('this.reportService.getPosItems$', r))
+    // )
+    // .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
 
     this.filteredPosIdOptions = this.filterForm.get('posId').valueChanges
     .pipe(
@@ -94,11 +139,6 @@ export class reportsComponent implements OnInit, OnDestroy {
       startWith(null),
       tap(buId => this.updateAvailableProducts(buId))
     ).subscribe(result => this.businessVsProducts = result, err => {}, () => {});
-
-    this.reportService.getBusinessAndProducts$()
-    .pipe(
-    )
-    .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
 
 
     this.filterForm.valueChanges
@@ -116,6 +156,7 @@ export class reportsComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy() {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   initMap() {
@@ -132,6 +173,10 @@ export class reportsComponent implements OnInit, OnDestroy {
     console.log(this.filterForm);
   }
 
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
   updateAvailableProducts(businessId) {
     (businessId)
       ? this.businessVsProducts = this.businessVsProducts.find(e => businessId === businessId).products
@@ -139,9 +184,11 @@ export class reportsComponent implements OnInit, OnDestroy {
   }
 
   private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
+    if (value) {
+      const filterValue = value.toLowerCase();
+      return this.posIdOptions.filter(option => option.toLowerCase().includes(filterValue));
+    }
 
-    return this.posIdOptions.filter(option => option.toLowerCase().includes(filterValue));
   }
 
 }

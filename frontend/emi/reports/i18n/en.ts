@@ -11,6 +11,9 @@ export const locale = {
         PRODUCT: 'Product',
         POS_ID: 'Pos ID'
       }
+    },
+    PRODUCTS: {
+      CIVICA_CARD_RELOAD: 'Civica card reload'
     }
   }
 };

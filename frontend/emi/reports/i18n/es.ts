@@ -11,6 +11,9 @@ export const locale = {
         PRODUCT: 'Producto',
         POS_ID: 'Id del pos'
       }
+    },
+    PRODUCTS: {
+      CIVICA_CARD_RELOAD: 'Recarga cívica'
     }
   }
 };

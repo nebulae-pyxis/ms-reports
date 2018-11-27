@@ -43,8 +43,8 @@
 
                   <mat-form-field class="center-text">
                     <mat-select formControlName="product" placeholder="{{'FILTERS.PLACEHOLDERS.PRODUCT' | translate}}">
-                      <mat-option *ngFor="let bu of []" [value]="bu">
-                        {{ 'PRODUCT.' + bu | translate}}
+                      <mat-option *ngFor="let product of productOpstions" [value]="product">
+                        {{ 'PRODUCTS.' + product | translate}}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
