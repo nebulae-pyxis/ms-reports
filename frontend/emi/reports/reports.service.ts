@@ -3,8 +3,8 @@ import { Observable } from 'rxjs/Observable';
 import * as Rx from 'rxjs';
 import { GatewayService } from '../../../api/gateway.service';
 import {
-  getHelloWorld,
-  reportsHelloWorldSubscription
+  getBusinesses,
+  getPosItems
 } from './gql/reports';
 import { of } from 'rxjs';
 
@@ -16,38 +16,28 @@ export class reportsService {
 
   }
 
-  /**
-   * Hello World sample, please remove
-   */
-  getHelloWorld$() {
+  getBusinessAndProducts$() {
     return this.gateway.apollo
-      .watchQuery<any>({
-        query: getHelloWorld,
+      .query<any>({
+        query: getBusinesses,
         fetchPolicy: 'network-only'
       })
-      .valueChanges.map(
-        resp => resp.data.getHelloWorldFromreports.sn
-      );
+      .map( resp => resp.data.ReportBusinesses);
   }
-
   /**
-  * Hello World subscription sample, please remove
-  */
- getEventSourcingMonitorHelloWorldSubscription$(): Observable<any> {
-  return this.gateway.apollo
-    .subscribe({
-      query: reportsHelloWorldSubscription
-    })
-    .map(resp => resp.data.reportsHelloWorldSubscription.sn);
-}
+     [ { businessId: '123Nebula', businessName: 'Nebula', products: ['Recarga civica', 'venta pos'] },
+       { businessId: '123Gana', businessName: 'Gana', products: ['Recarga', 'recarga minutos'] }
+     ]
+   */
 
-getBusinessAndProducts$(){
-  return of(
-    [
-    { businessId: '123Nebula', businessName: 'Nebula', products: ['Recarga civica', 'venta pos'] },
-    { businessId: '123Gana', businessName: 'Gana', products: ['Recarga', 'recarga minutos'] }
-  ]
-  );
-}
+  getPosItems$(businessId: string, product: string, posId: string) {
+    return this.gateway.apollo
+      .query<any>({
+        query: getPosItems,
+        fetchPolicy: 'network-only',
+        variables: { businessId, product, posId }
+      })
+      .map( resp => resp.data.ReportPosItems);
+  }
 
 }

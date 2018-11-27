@@ -2,6 +2,7 @@
 const Rx = require("rxjs");
 const eventSourcing = require("../../tools/EventSourcing")();
 const reports = require('../../domain/reports');
+const business= require('../../domain/business');
 const { map, switchMap, filter, mergeMap, concatMap } = require('rxjs/operators');
 /**
  * Singleton instance
@@ -127,7 +128,14 @@ class EventStoreService {
         fn: reports.eventSourcing.handleCivicaCardReload$,
         obj: reports.cqrs
       },
-
+      BusinessCreated: {
+        fn: business.eventSourcing.handleBusinessCreated$,
+        obj: business.eventSourcing
+      },
+      BusinessGeneralInfoUpdated: {
+        fn: business.eventSourcing.handleBusinessGeneralInfoUpdated$,
+        obj: business.eventSourcing
+      }
     };
   }
 
@@ -136,13 +144,18 @@ class EventStoreService {
   */
   generateAggregateEventsArray() {
     return [
-
-      //Sample for assoc events and aggregates, please remove
       {
         aggregateType: "CivicaCard",
         eventType: "CivicaCardReload"
       },
-
+      {
+        aggregateType: "Business",
+        eventType: "BusinessCreated"
+      },
+      {
+        aggregateType: "Business",
+        eventType: "BusinessGeneralInfoUpdated"
+      }
     ]
   }
 }

@@ -55,7 +55,7 @@ export class reportsComponent implements OnInit, OnDestroy {
 
 
   constructor(
-    private reportservice: reportsService,
+    private reportService: reportsService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
     private keycloakService: KeycloakService
@@ -69,6 +69,20 @@ export class reportsComponent implements OnInit, OnDestroy {
     this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
     this.initMap();
 
+    this.reportService.getBusinessAndProducts$()
+    .pipe(
+      map(r => JSON.parse(JSON.stringify(r))),
+      tap(r => console.log(r))
+    )
+    .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
+
+    this.reportService.getPosItems$('businessId', 'recarga_civica', null )
+    .pipe(
+      map(r => JSON.parse(JSON.stringify(r))),
+      tap(r => console.log(r))
+    )
+    .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
+
     this.filteredPosIdOptions = this.filterForm.get('posId').valueChanges
     .pipe(
       startWith(''),
@@ -81,7 +95,7 @@ export class reportsComponent implements OnInit, OnDestroy {
       tap(buId => this.updateAvailableProducts(buId))
     ).subscribe(result => this.businessVsProducts = result, err => {}, () => {});
 
-    this.reportservice.getBusinessAndProducts$()
+    this.reportService.getBusinessAndProducts$()
     .pipe(
     )
     .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
@@ -98,8 +112,6 @@ export class reportsComponent implements OnInit, OnDestroy {
       })
     )
     .subscribe((change) => {console.log(change); }, err => {}, () => {});
-
-
   }
 
 

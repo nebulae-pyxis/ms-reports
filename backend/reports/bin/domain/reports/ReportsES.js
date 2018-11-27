@@ -1,8 +1,11 @@
 const Rx = require("rxjs");
 const { take, mergeMap, tap, catchError, map } = require('rxjs/operators');
 const HelloWorldDA = require('../../data/HelloWorldDA');
+const PosDA = require('../../data/PosDA');
+const BusinessDA = require('../../data/BusinessDA');
 const broker = require("../../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = process.env.EMI_MATERIALIZED_VIEW_UPDATES_TOPIC;
+const Helper = require('./ReportsHelper');
 
 const  { forkJoin, of, interval } = require('rxjs');
 
@@ -24,7 +27,13 @@ class ReportsES {
   }
 
   handleCivicaCardReload$(evt){
-    return of(evt).pipe(
+    return of(evt)    
+    .pipe(
+      mergeMap(evt => Helper.extractPosInfoFromCivicaCadReloadEvt(evt)),
+      mergeMap(posData => forkJoin(
+        PosDA.insertPosInfo$(posData),
+        BusinessDA.pushProduct$(posData.businessId, posData.products)
+      )),
       catchError(error => this.errorHandler$(error))
     )
   }

@@ -3,6 +3,7 @@ const { of } = require("rxjs");
 const broker = require("../../tools/broker/BrokerFactory")();
 const { CustomError, DefaultError } = require("../../tools/customError");
 const HelloWorldDA = require('../../data/HelloWorldDA');
+const PosDA = require('../../data/PosDA');
 
 let instance;
 
@@ -19,6 +20,15 @@ class ReportsCQRS {
       mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse)),
       catchError(err => this.errorHandler$(err)) 
     );
+  }
+
+  getPosCoverage$({ args }, authToken){
+    console.log(args);
+    return PosDA.getPosCoverage$(args.businessId, args.product, args.posId)
+    .pipe(
+      mergeMap(rawData => this.buildSuccessResponse$(rawData)),
+      catchError(error => this.errorHandler$(error))
+    )
   }
 
   //#region  mappers for API responses

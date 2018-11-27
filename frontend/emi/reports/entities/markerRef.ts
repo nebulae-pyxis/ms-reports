@@ -1,18 +1,18 @@
 // tslint:disable-next-line:import-blacklist
 import * as Rx from 'rxjs/Rx';
 /// <reference types="googlemaps" />
-import { MapRef } from './agmMapRef'
+import { MapRef } from './agmMapRef';
 
 export class Vehicle {
-  plate: string = '';
-  serial: string = '';
-  groupName: string = '';
+  plate = '';
+  serial = '';
+  groupName = '';
   lastLocationTimestamp: number = undefined;
-  cpuUsageAlarmActivated: boolean = false;
-  ramUsageAlarmActivated: boolean = false;
-  sdUsageAlarmActivated: boolean = false;
-  temperatureAlarmActivated: boolean = false;
-  online: boolean = false;
+  cpuUsageAlarmActivated = false;
+  ramUsageAlarmActivated = false;
+  sdUsageAlarmActivated = false;
+  temperatureAlarmActivated = false;
+  online = false;
 }
 
 

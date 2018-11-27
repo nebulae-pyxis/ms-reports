@@ -25,11 +25,22 @@ module.exports = {
     //// QUERY ///////
 
     Query: {
-        getHelloWorldFromreports(root, args, context) {
+        ReportBusinesses(root, args, context) {
             return broker
                 .forwardAndGetReply$(
-                    "HelloWorld",
-                    "emi-gateway.graphql.query.getHelloWorldFromreports",
+                    "Business",
+                    "emigateway.graphql.query.getWalletBusinesses",
+                    { root, args, jwt: context.encodedToken },
+                    2000
+                )
+                .mergeMap(response => getResponseFromBackEnd$(response))
+                .toPromise();
+        },
+        ReportPosItems(root, args, context) {
+            return broker
+                .forwardAndGetReply$(
+                    "Pos",
+                    "emi-gateway.graphql.query.getCoveragePos",
                     { root, args, jwt: context.encodedToken },
                     2000
                 )
@@ -43,16 +54,16 @@ module.exports = {
 
     //// SUBSCRIPTIONS ///////
     Subscription: {
-        reportsHelloWorldSubscription: {
-            subscribe: withFilter(
-                (payload, variables, context, info) => {
-                    return pubsub.asyncIterator("reportsHelloWorldSubscription");
-                },
-                (payload, variables, context, info) => {
-                    return true;
-                }
-            )
-        }
+        // reportsHelloWorldSubscription: {
+        //     subscribe: withFilter(
+        //         (payload, variables, context, info) => {
+        //             return pubsub.asyncIterator("reportsHelloWorldSubscription");
+        //         },
+        //         (payload, variables, context, info) => {
+        //             return true;
+        //         }
+        //     )
+        // }
 
     }
 };

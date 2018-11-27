@@ -1,15 +1,41 @@
-"Hello world sample, please remove"
-type HelloWorldreports{
-  "text"
-  sn: String!  
+type ReportBusinesses {
+  _id: String
+  name: String
+  products: [String]
+}
+
+type ReportPosInfo {
+  userName: String
+  userId: String
+  terminal: String
+}
+type ReportLatLong {
+  lat: Float
+  long: Float
+}
+
+type ReportLocation {
+  type: String
+  coordinates: ReportLatLong
+}
+
+type ReportPos {
+  _id: String
+  lastUpdate: BigInt
+  businessId: String
+  products: [String]
+  pos: ReportPosInfo
+  location: ReportLocation
 }
 
 type Query {
   "Hello world sample, please remove"
-  getHelloWorldFromreports: HelloWorldreports
+  ReportBusinesses: [ReportBusinesses]
+  "Fecth the pos items"
+  ReportPosItems(businessId: String, product: String, posId: String ): [ReportPos]
 }
 
-type Subscription {
-  "Hello world sample, please remove"
-  reportsHelloWorldSubscription: HelloWorldreports  
-}
+# type Subscription {
+#   "Hello world sample, please remove"
+#   reportsHelloWorldSubscription: HelloWorldreports  
+# }

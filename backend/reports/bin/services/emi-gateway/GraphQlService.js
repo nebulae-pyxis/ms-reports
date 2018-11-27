@@ -1,6 +1,7 @@
 "use strict";
 
 const reports = require("../../domain/reports");
+const business = require("../../domain/business");
 const broker = require("../../tools/broker/BrokerFactory")();
 const Rx = require("rxjs");
 const jsonwebtoken = require("jsonwebtoken");
@@ -148,7 +149,15 @@ class GraphQlService {
       {
         aggregateType: "HelloWorld",
         messageType: "emi-gateway.graphql.query.getHelloWorldFromreports"
-      }     
+      },
+      {
+        aggregateType: "Pos",
+        messageType: "emi-gateway.graphql.query.getCoveragePos"
+      },
+      {
+        aggregateType: "Business",
+        messageType: "emigateway.graphql.query.getWalletBusinesses"
+      }
     ];
   }
 
@@ -162,7 +171,15 @@ class GraphQlService {
       "emi-gateway.graphql.query.getHelloWorldFromreports": {
         fn: reports.cqrs.getHelloWorld$,
         obj: reports.cqrs
-      },      
+      },
+      "emi-gateway.graphql.query.getCoveragePos": {
+        fn: reports.cqrs.getPosCoverage$,
+        obj: reports.cqrs
+      },
+      "emigateway.graphql.query.getWalletBusinesses": {
+        fn: business.cqrs.getWalletBusinesses$,
+        obj: business.cqrs
+      }
     };
   }
 }
