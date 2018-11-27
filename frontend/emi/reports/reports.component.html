@@ -1,8 +1,121 @@
-<div class="page-layout blank p-24" fusePerfectScrollbar>
-  <h2> {{helloWorld}} </h2>
-  <h2>{{ helloWorldLabelQuery$ | async}}</h2>
-  <h2>{{ helloWorldLabelSubscription$ | async}}</h2>
+<div id="coverage-reports" class="page-layout carded left-sidenav" fusePerfectScrollbar>
+  <!-- TOP BACKGROUND -->
+  <div class="top-bg mat-accent-bg"></div>
+  <!-- / TOP BACKGROUND -->
+
+  <mat-sidenav-container>
+    <!-- SIDENAV -->
+    <mat-sidenav class="sidenav" align="start" mode="side"opened="true"
+      fuseMatSidenavHelper="carded-left-sidenav" mat-is-locked-open="gt-md" >
+      <!-- SIDENAV HEADER -->
+
+      <div fxLayout="column" fxLayoutAlign="space-between start" class="header p-24 pb-4" ngClass="mat-accent-bg"
+        ngClass.gt-md="white-fg">
+        <div class="logo" fxFlex fxLayout="row" fxLayoutAlign="start center">
+          <mat-icon class="logo-icon s-32" *fuseIfOnDom [@animate]="{ value: '*', params: { delay: '50ms', scale: '0.2' } }">book</mat-icon>
+          <span class="logo-text" *fuseIfOnDom [@animate]="{ value: '*', params: { delay: '100ms', x: '-25px' } }">{{
+            "MAP.COVERAGE_TITLE" | translate }}</span>
+        </div>
+
+        <div class="account" fxLayout="column" *fuseIfOnDom [@animate]="{ value: '*', params: { delay: '300ms' } }">
+
+          <span class="mat-title my-20">
+            {{'FILTERS.TITLE' | translate}}
+          </span>
+        </div>
+      </div>
+      <!-- / SIDENAV HEADER -->
+
+      <!-- SIDENAV CONTENT -->
+      <div class="content" fusePerfectScrollbar *fuseIfOnDom [@animate]="{ value: '*', params: { y: '50px' } }">
+
+          <div class="nav" fxLayout="column">
+              <form style="margin-top: 10px;" fxLayout="column" fxLayoutAlign="start" fxFlex="100" name="form" [formGroup]="filterForm">
+                <div *ngIf="businessVsProducts" fxLayout="column" fxLayoutAlign="space-between center" fxFlex="100">
+
+                  <mat-form-field class="center-text">
+                    <mat-select formControlName="businessId" placeholder="{{'FILTERS.PLACEHOLDERS.BUSINESSUNIT' | translate}}">
+                      <mat-option *ngFor="let bu of businessVsProducts" [value]="bu.businessId">
+                        {{ bu.businessName }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field class="center-text">
+                    <mat-select formControlName="product" placeholder="{{'FILTERS.PLACEHOLDERS.PRODUCT' | translate}}">
+                      <mat-option *ngFor="let bu of []" [value]="bu">
+                        {{ 'PRODUCT.' + bu | translate}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <!-- <mat-form-field class="center-text">
+                    <mat-select formControlName="posId" >
+                      <mat-option *ngFor="let bu of ['nebula', 'gana']" [value]="bu">
+                        {{ 'WALLET.' + bu | translate}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field> -->
+
+                  <mat-form-field class="center-text" >
+                    <input type="text" placeholder="{{'FILTERS.PLACEHOLDERS.POS_ID' | translate}}"
+                      matInput formControlName="posId" [matAutocomplete]="autoComplete">
+                    <mat-autocomplete #autoComplete="matAutocomplete">
+                      <mat-option *ngFor="let pos of filteredPosIdOptions | async" [value]="pos">
+                        {{pos}}
+                      </mat-option>
+                    </mat-autocomplete>
+                  </mat-form-field>
+
+
+
+                  <button mat-button (click)="showFilterForm()" >Click me!</button>
+                </div>
+              </form>
+
+            </div>
+      </div>
+      <!-- / SIDENAV CONTENT -->
+    </mat-sidenav>
+    <!-- / SIDENAV -->
+
+    <!-- CENTER -->
+    <div class="center">
+      <!-- MOBILE HEADER -->
+      <div style="height: 50px" fxShow fxHide.gt-md fxLayout="row" fxLayoutAlign="start center">
+        <div fxFlex="100" fxLayout="row">
+          <div fxFlex="10">
+            <button mat-button class="mat-icon-button sidenav-toggle" fuseMatSidenavToggler="carded-left-sidenav" fxHide.gt-md
+              aria-label="Toggle Sidenav">
+              <mat-icon>filter_list</mat-icon>
+            </button>
+          </div>
+
+          <div style="font-size: 16px; color: papayawhip" fxFlex="90" fxLayoutAlign="center center">
+            <span> {{'MAP.COVERAGE_TITLE' | translate}} </span>
+          </div>
+
+        </div>
+
+
+      </div>
+       <!-- MOBILE HEADER -->
+      <!-- DESKTOP HEADER -->
+      <div fxHide fxShow.gt-md class="header" fxLayout="row" fxLayoutAlign="start center">
+          <div style="font-size: 22px; color: papayawhip" fxFlex fxLayout="row" fxLayoutAlign="center center">
+              <span> {{'MAP.COVERAGE_TITLE' | translate}} </span>
+          </div>
+        </div>
+      <!-- DESKTOP HEADER -->
+      <!-- / CONTENT HEADER -->
+
+      <!-- CONTENT CARD -->
+      <div class="content-card mat-white-bg">
+        <div #gmap style="width:100%; height:100%; margin: 0; padding: 0">
+        </div>
+      </div>
+      <!-- / CONTENT CARD -->
+    </div>
+    <!-- / CENTER -->
+  </mat-sidenav-container>
 </div>
-
-
-

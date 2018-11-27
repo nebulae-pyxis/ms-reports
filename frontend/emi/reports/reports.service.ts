@@ -6,6 +6,7 @@ import {
   getHelloWorld,
   reportsHelloWorldSubscription
 } from './gql/reports';
+import { of } from 'rxjs';
 
 @Injectable()
 export class reportsService {
@@ -38,6 +39,15 @@ export class reportsService {
       query: reportsHelloWorldSubscription
     })
     .map(resp => resp.data.reportsHelloWorldSubscription.sn);
+}
+
+getBusinessAndProducts$(){
+  return of(
+    [
+    { businessId: '123Nebula', businessName: 'Nebula', products: ['Recarga civica', 'venta pos'] },
+    { businessId: '123Gana', businessName: 'Gana', products: ['Recarga', 'recarga minutos'] }
+  ]
+  );
 }
 
 }
