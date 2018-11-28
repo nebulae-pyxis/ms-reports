@@ -21,13 +21,13 @@
         "contents": [
             {
                 "groupId": "BUSINESSES",
-                "id": "reports-coverage",
+                "id": "pos-coverage-reports",
                 "icon": "library_books",
                 "translate": {
                     "en": "Coverage",
                     "es": "cobertura"
                 },
-                "navURL": "/",
+                "navURL": "/pos-coverage-report",
                 "path": "pos-coverage-report",
                 "loadChildren": "./main/content/pos-coverage-report/pos-coverage-report.module#PosCoverageReportModule",
                 "priority": 1000,

@@ -46,7 +46,7 @@ class PosDA {
     const collection = mongoDB.db.collection(CollectionName);
     const filter = {};
     if(businessId){ filter.businessId = businessId; }
-    if(product){ filter.product = product; }
+    if(product){ filter.products = { $in:[product] } }
     if(posId){ filter.posId = posId; }
     return defer(() => collection.find(filter).toArray());
   }
