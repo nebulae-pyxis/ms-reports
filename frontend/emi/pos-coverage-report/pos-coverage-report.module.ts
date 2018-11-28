@@ -4,13 +4,13 @@ import { SharedModule } from '../../../core/modules/shared.module';
 import { DatePipe } from '@angular/common';
 import { FuseWidgetModule } from '../../../core/components/widget/widget.module';
 
-import { reportsService } from './reports.service';
-import { reportsComponent } from './reports.component';
+import { ReportsService } from './pos-coverage-report.service';
+import { PosCoverageReportComponent } from './pos-coverage-report.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: reportsComponent,
+    component: PosCoverageReportComponent,
   }
 ];
 
@@ -21,9 +21,9 @@ const routes: Routes = [
     FuseWidgetModule
   ],
   declarations: [
-    reportsComponent    
+    PosCoverageReportComponent
   ],
-  providers: [ reportsService, DatePipe]
+  providers: [ ReportsService, DatePipe]
 })
 
-export class reportsModule {}
+export class PosCoverageReportModule {}

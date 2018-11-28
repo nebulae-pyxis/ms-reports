@@ -145,11 +145,6 @@ class GraphQlService {
   getSubscriptionDescriptors() {
     console.log("GraphQl Service starting ...");
     return [
-      //Sample incoming request, please remove
-      {
-        aggregateType: "HelloWorld",
-        messageType: "emi-gateway.graphql.query.getHelloWorldFromreports"
-      },
       {
         aggregateType: "Pos",
         messageType: "emi-gateway.graphql.query.getCoveragePos"
@@ -166,12 +161,7 @@ class GraphQlService {
    * returns a map that assocs GraphQL request with its processor
    */
   generateFunctionMap() {    
-    return {
-      //Sample incoming request, please remove
-      "emi-gateway.graphql.query.getHelloWorldFromreports": {
-        fn: reports.cqrs.getHelloWorld$,
-        obj: reports.cqrs
-      },
+    return {      
       "emi-gateway.graphql.query.getCoveragePos": {
         fn: reports.cqrs.getPosCoverage$,
         obj: reports.cqrs

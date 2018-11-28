@@ -16,6 +16,10 @@ query  ReportPosItems($businessId: String, $product: String, $posId: String   ){
     }
     location {
       type
+      coordinates {
+        lat
+        long
+      }
     }
   }
 }`;

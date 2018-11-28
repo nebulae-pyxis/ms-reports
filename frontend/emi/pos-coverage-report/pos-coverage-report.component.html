@@ -59,12 +59,7 @@
 
                   <mat-form-field class="center-text" >
                     <input type="text" placeholder="{{'FILTERS.PLACEHOLDERS.POS_ID' | translate}}"
-                      matInput formControlName="posId" [matAutocomplete]="autoComplete">
-                    <mat-autocomplete #autoComplete="matAutocomplete">
-                      <mat-option *ngFor="let pos of filteredPosIdOptions | async" [value]="pos">
-                        {{pos}}
-                      </mat-option>
-                    </mat-autocomplete>
+                      matInput formControlName="posId">
                   </mat-form-field>
 
 

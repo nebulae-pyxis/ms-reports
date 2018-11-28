@@ -5,11 +5,10 @@ import { GatewayService } from '../../../api/gateway.service';
 import {
   getBusinesses,
   getPosItems
-} from './gql/reports';
-import { of } from 'rxjs';
+} from './gql/pos-coverage-report.js';
 
 @Injectable()
-export class reportsService {
+export class ReportsService {
 
 
   constructor(private gateway: GatewayService) {
@@ -24,11 +23,6 @@ export class reportsService {
       })
       .map( resp => resp.data.ReportBusinesses);
   }
-  /**
-     [ { businessId: '123Nebula', businessName: 'Nebula', products: ['Recarga civica', 'venta pos'] },
-       { businessId: '123Gana', businessName: 'Gana', products: ['Recarga', 'recarga minutos'] }
-     ]
-   */
 
   getPosItems$(businessId: string, product: string, posId: string) {
     return this.gateway.apollo

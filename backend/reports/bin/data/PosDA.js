@@ -8,7 +8,7 @@ const { CustomError } = require('../tools/customError');
 const { Observable, defer, of } = require('rxjs');
 const { map, mergeMap } = require('rxjs/operators');
 
-class HelloWorldDA {
+class PosDA {
 
   static start$(mongoDbInstance) {
     return Rx.Observable.create((observer) => {
@@ -53,6 +53,6 @@ class HelloWorldDA {
 
 }
 /**
- * @returns {HelloWorldDA}
+ * @returns {PosDA}
  */
-module.exports =  HelloWorldDA 
+module.exports =  PosDA 

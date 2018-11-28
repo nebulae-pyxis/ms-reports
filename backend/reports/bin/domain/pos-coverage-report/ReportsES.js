@@ -1,6 +1,5 @@
 const Rx = require("rxjs");
 const { take, mergeMap, tap, catchError, map } = require('rxjs/operators');
-const HelloWorldDA = require('../../data/HelloWorldDA');
 const PosDA = require('../../data/PosDA');
 const BusinessDA = require('../../data/BusinessDA');
 const broker = require("../../tools/broker/BrokerFactory")();
@@ -9,22 +8,18 @@ const Helper = require('./ReportsHelper');
 
 const  { forkJoin, of, interval } = require('rxjs');
 
+/**
+ * to send msg to susbcritio 
+ * broker.send$(MATERIALIZED_VIEW_TOPIC, 'reportsHelloWorldEvent', evt);
+ */
+
 let instance;
 
 class ReportsES {
   constructor() {
-    this.initHelloWorldEventGenerator();
   }
 
-  /**
-   * Handle HelloWorld Query, please remove
-   * This in an Event HAndler for Event- events
-   */
-  handleHelloWorld$(evt) {
-    return Rx.of('Some process for HelloWorld event').pipe(
-        catchError(error => this.errorHandler$(error))
-    )
-  }
+ 
 
   handleCivicaCardReload$(evt){
     return of(evt)    
@@ -43,24 +38,6 @@ class ReportsES {
             LogErrorDA.persistAccumulatedTransactionsError$(log)
         );
     }
-
-    initHelloWorldEventGenerator(){
-        interval(1000).pipe(
-          take(120),
-          mergeMap(id =>  HelloWorldDA.getHelloWorld$())    ,
-          mergeMap(evt => {
-            return broker.send$(MATERIALIZED_VIEW_TOPIC, 'reportsHelloWorldEvent',evt);
-          })
-        )
-        .subscribe(
-          (evt) => console.log('emi-gateway GraphQL sample event sent, please remove'),
-          (err) => { 
-            console.log(err);
-            console.error('emi-gateway GraphQL sample event sent ERROR, please remove')
-          },
-          () => console.log('emi-gateway GraphQL sample event sending STOPPED, please remove'),
-        );
-      }
 }
 
 /**

@@ -1,31 +1,29 @@
 import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from './../../../core/services/translation-loader.service';
-import { reportsService } from './reports.service';
+import { FuseTranslationLoaderService } from '../../../core/services/translation-loader.service';
+import { ReportsService } from './pos-coverage-report.service';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { Subscription } from 'rxjs/Subscription';
-import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
-import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent } from './entities/markerRef';
-import { of, combineLatest, Observable, forkJoin, concat } from 'rxjs';
-import { debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
-import { mergeMap } from 'rxjs-compat/operator/mergeMap';
+import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent, PosPoint } from './entities/markerRef';
+import { of, combineLatest, Observable, forkJoin, concat, from, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap } from 'rxjs/operators';
 
 
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss'],
+  templateUrl: './pos-coverage-report.component.html',
+  styleUrls: ['./pos-coverage-report.component.scss'],
   animations: fuseAnimations
 })
-export class reportsComponent implements OnInit, OnDestroy {
+export class PosCoverageReportComponent implements OnInit, OnDestroy {
 
   isSystemAdmin = false;
   filterForm: FormGroup = new FormGroup({
@@ -48,15 +46,18 @@ export class reportsComponent implements OnInit, OnDestroy {
   businessVsProducts: any[];
 
   posIdOptions: string[] = ['One', 'Two', 'Three'];
-  filteredPosIdOptions: Observable<string[]>;
   SYS_ADMIN = 'SYSADMIN';
 
   productOpstions: string[];
 
   subscriptions: Subscription[] = [];
 
+  markers: MarkerRef[] = [];
+  selectedMarker: MarkerRef;
+
+
   constructor(
-    private reportService: reportsService,
+    private reportService: ReportsService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
     private keycloakService: KeycloakService
@@ -118,22 +119,6 @@ export class reportsComponent implements OnInit, OnDestroy {
   .subscribe(r => {}, err => {}, () => {});
 
 
-
-
-
-    // this.reportService.getPosItems$('businessId', 'recarga_civica', null )
-    // .pipe(
-    //   map(r => JSON.parse(JSON.stringify(r))),
-    //   tap(r => console.log('this.reportService.getPosItems$', r))
-    // )
-    // .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
-
-    this.filteredPosIdOptions = this.filterForm.get('posId').valueChanges
-    .pipe(
-      startWith(''),
-      map(value => this._filter(value))
-    );
-
     this.filterForm.get('businessId').valueChanges
     .pipe(
       startWith(null),
@@ -149,9 +134,31 @@ export class reportsComponent implements OnInit, OnDestroy {
         businessId: null,
         product: null,
         posId: null
-      })
+      }),
+      tap(r => console.log('FILTERS CHANGED ==> ', r)),
+      mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
+      map(r => JSON.parse(JSON.stringify(r))),
+      tap(r => console.log('this.reportService.getPosItems$', JSON.stringify(r) )),
+      mergeMap(posList => this.drawPosList$(posList) )
     )
-    .subscribe((change) => {console.log(change); }, err => {}, () => {});
+    .subscribe(() => {}, err => console.error(err), () => {});
+  }
+
+  drawPosList$(posList: any[]){
+    return from(posList)
+    .pipe(
+      map((p) => new MarkerRef(
+        new PosPoint(p._id, p.lastUpdate, p.businessId, p.products,  p.pos.userName, p.location ),
+        {
+          position: {
+            lat: parseFloat(p.location.coordinates.lat),
+            lng: parseFloat(p.location.coordinates.long)
+          }, map: null
+        }
+        )),
+      tap(marker => marker.setMap(this.map)),
+      tap(marker => this.addMarkerToMap(marker))
+    );
   }
 
 
@@ -169,6 +176,35 @@ export class reportsComponent implements OnInit, OnDestroy {
     this.map = new MapRef(this.gmapElement.nativeElement, mapOptions);
   }
 
+   /**
+   * Adds a marker to the map and configure observables to listen to the events associated with the marker (Click, etc)
+   * @param marker marker to be added
+   */
+  addMarkerToMap(marker: MarkerRef) {
+    marker.inizialiteEvents();
+    marker.clickEvent.subscribe(event => {
+      this.onMarkerClick(marker, event);
+    });
+
+    this.markers.push(marker);
+  }
+
+  /**
+   * Opens the infoWindow of the clicked marker and closes the other infoWindows in case that these were open.
+   * @param marker clicked marker
+   * @param event Event
+   */
+  onMarkerClick(marker: MarkerRef, event) {
+    this.selectedMarker = marker;
+    this.markers.forEach(m => {
+      m.infoWindow.close();
+      m.setAnimation(null);
+    });
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    marker.setAnimation(null);
+    marker.infoWindow.open(this.map, marker);
+  }
+
   showFilterForm(){
     console.log(this.filterForm);
   }
@@ -183,12 +219,5 @@ export class reportsComponent implements OnInit, OnDestroy {
       : this.businessVsProducts = this.businessVsProducts.reduce((acc, item) => { acc.push(...item.products); return acc; }, []);
   }
 
-  private _filter(value: string): string[] {
-    if (value) {
-      const filterValue = value.toLowerCase();
-      return this.posIdOptions.filter(option => option.toLowerCase().includes(filterValue));
-    }
-
-  }
 
 }
