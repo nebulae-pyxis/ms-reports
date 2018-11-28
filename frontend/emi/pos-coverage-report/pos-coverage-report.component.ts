@@ -24,7 +24,6 @@ import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap } fro
   animations: fuseAnimations
 })
 export class PosCoverageReportComponent implements OnInit, OnDestroy {
-
   isSystemAdmin = false;
   filterForm: FormGroup = new FormGroup({
     businessId: new FormControl(),
@@ -66,7 +65,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initMap();
+
+    this.initMap(); // initialize the map element
 
     this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
 
