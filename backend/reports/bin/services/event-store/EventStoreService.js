@@ -1,7 +1,7 @@
 "use strict";
 const Rx = require("rxjs");
 const eventSourcing = require("../../tools/EventSourcing")();
-const reports = require('../../domain/reports');
+const reports = require('../../domain/pos-coverage-report');
 const business= require('../../domain/business');
 const { map, switchMap, filter, mergeMap, concatMap } = require('rxjs/operators');
 /**

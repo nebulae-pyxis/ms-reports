@@ -4,6 +4,7 @@ const broker = require("../../tools/broker/BrokerFactory")();
 const { CustomError, DefaultError } = require("../../tools/customError");
 const HelloWorldDA = require('../../data/HelloWorldDA');
 const PosDA = require('../../data/PosDA');
+const { handleError$, buildSuccessResponse$ } = require('../../tools/GraphqlResponseTools');
 
 let instance;
 
@@ -17,8 +18,8 @@ class ReportsCQRS {
   getHelloWorld$(request) {
     console.log(`request: request`)
     return HelloWorldDA.getHelloWorld$().pipe(
-      mergeMap(rawResponse => this.buildSuccessResponse$(rawResponse)),
-      catchError(err => this.errorHandler$(err)) 
+      mergeMap(rawResponse => buildSuccessResponse$(rawResponse)),
+      catchError(err => handleError$(err)) 
     );
   }
 
@@ -26,40 +27,10 @@ class ReportsCQRS {
     console.log(args);
     return PosDA.getPosCoverage$(args.businessId, args.product, args.posId)
     .pipe(
-      mergeMap(rawData => this.buildSuccessResponse$(rawData)),
-      catchError(error => this.errorHandler$(error))
+      mergeMap(rawData => buildSuccessResponse$(rawData)),
+      catchError(error => handleError$(error))
     )
   }
-
-  //#region  mappers for API responses
-  errorHandler$(err) {
-    console.log("Handle error => ", err);
-    return of(err).pipe(
-      map(err => {
-        const exception = { data: null, result: {} };
-        const isCustomError = err instanceof CustomError;
-        if (!isCustomError) {
-          err = new DefaultError(err);
-        }
-        exception.result = {
-          code: err.code,
-          error: { ...err.getContent() }
-        };
-        return exception;
-      })
-    );
-  }
-
-  buildSuccessResponse$(rawRespponse) {
-    return of(rawRespponse).pipe(
-      map(resp => ({
-        data: resp,
-        result: { code: 200 }
-      }))
-    );
-  }
-
-
 }
 
 /**
