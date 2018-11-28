@@ -1,5 +1,5 @@
-const eventSourcing = require('./ReportsES')();
-const cqrs = require('./ReportsCQRS')();
+const eventSourcing = require('./PosCoverageReportES')();
+const cqrs = require('./PosCoverageReportCQRS')();
 
 module.exports = {
     eventSourcing,

@@ -4,7 +4,7 @@ const PosDA = require('../../data/PosDA');
 const BusinessDA = require('../../data/BusinessDA');
 const broker = require("../../tools/broker/BrokerFactory")();
 const MATERIALIZED_VIEW_TOPIC = process.env.EMI_MATERIALIZED_VIEW_UPDATES_TOPIC;
-const Helper = require('./ReportsHelper');
+const Helper = require('./PosCoverageReportHelper');
 
 const  { forkJoin, of, interval } = require('rxjs');
 

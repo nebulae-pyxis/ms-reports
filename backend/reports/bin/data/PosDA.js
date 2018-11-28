@@ -47,7 +47,10 @@ class PosDA {
     const filter = {};
     if(businessId){ filter.businessId = businessId; }
     if(product){ filter.products = { $in:[product] } }
-    if(posId){ filter.posId = posId; }
+    if(posId && posId != ""){
+       filter._id = { $regex: `${posId}.*`, $options: "i" }
+      }
+    console.log("FILTER ==> ", filter);
     return defer(() => collection.find(filter).toArray());
   }
 

@@ -12,7 +12,7 @@ import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
 import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent, PosPoint } from './entities/markerRef';
 import { of, combineLatest, Observable, forkJoin, concat, from, merge } from 'rxjs';
-import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toArray, filter, mapTo } from 'rxjs/operators';
 
 
 
@@ -42,6 +42,9 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   map: MapRef;
   bounds: google.maps.LatLngBounds;
   markerClusterer: MarkerCluster;
+  markers: MarkerRef[] = [];
+  selectedMarker: MarkerRef;
+
   businessVsProducts: any[];
 
   posIdOptions: string[] = ['One', 'Two', 'Three'];
@@ -51,8 +54,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
 
   subscriptions: Subscription[] = [];
 
-  markers: MarkerRef[] = [];
-  selectedMarker: MarkerRef;
+
 
 
   constructor(
@@ -138,12 +140,18 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       tap(r => console.log('FILTERS CHANGED ==> ', r)),
       mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
       map(r => JSON.parse(JSON.stringify(r))),
-      tap(r => console.log('this.reportService.getPosItems$', JSON.stringify(r) )),
-      mergeMap(posList => this.drawPosList$(posList) )
+      tap(r => console.log('this.reportService.getPosItems$', r )),
+      mergeMap(posList => this.clearMap$().pipe(mapTo(posList))),
+      mergeMap(posList => this.drawPosList$(posList)),
+      mergeMap(() => this.updateMarkerClusterer$() )
     )
     .subscribe(() => {}, err => console.error(err), () => {});
   }
 
+  /**
+   * Creates the MarkerRef object and push it to the map and the markers array
+   * @param posList List with all Pos items to draw in the map
+   */
   drawPosList$(posList: any[]){
     return from(posList)
     .pipe(
@@ -157,8 +165,44 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         }
         )),
       tap(marker => marker.setMap(this.map)),
-      tap(marker => this.addMarkerToMap(marker))
+      tap(marker => this.addMarkerToMap(marker)),
+      toArray()
     );
+  }
+
+  clearMap$(){
+    return from(this.markers)
+    .pipe(
+      filter(() => this.markers.length > 0),
+      map(marker => marker.setMap(null)),
+      toArray(),
+      map(() => this.markers = [])
+    );
+  }
+
+  /**
+   * Update markert clusterer, removing the markers in the cluster and then pushing the new posItems int he markers array
+   */
+  updateMarkerClusterer$() {
+    return of(this.markerClusterer)
+      .pipe(
+        // clear the cluster markers
+        map(markerCluster => {
+          if (markerCluster){
+            this.markerClusterer.clearMarkers();
+            console.log('SE HA LIPIADO EL CLUSTERER');
+          }
+          return null;
+        }),
+        filter(() => (this.markers && this.markers.length > 0)),
+        map(() => {
+          console.log('SE VAN A INSERTAR LOS MARCADORES => ', this.markers);
+          this.markerClusterer = new MarkerCluster(this.map, this.markers,
+            { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+          return true;
+        })
+
+      );
   }
 
 
