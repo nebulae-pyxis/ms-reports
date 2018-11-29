@@ -41,6 +41,7 @@ class BusinessCQRS {
   }
 }
 
+
 /**
  * Business CQRS
  * @returns {BusinessCQRS}

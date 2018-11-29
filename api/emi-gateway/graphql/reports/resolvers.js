@@ -69,7 +69,6 @@ module.exports = {
 };
 
 
-
 //// SUBSCRIPTIONS SOURCES ////
 
 const eventDescriptors = [
