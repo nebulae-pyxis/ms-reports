@@ -9,6 +9,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
 import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
+import { BusinessReportDashboardService } from './business-report-dashboard.service';
 
 
 
@@ -30,7 +31,7 @@ export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(
-    private BusinessReportDashboardService: BusinessReportDashboardService,
+    private businessReportDashboardService: BusinessReportDashboardService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
     private keycloakService: KeycloakService
@@ -47,4 +48,6 @@ export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
+
+  
 }

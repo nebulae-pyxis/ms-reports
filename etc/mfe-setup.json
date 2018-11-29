@@ -1,28 +1,37 @@
 [
     {
-        "name": "reports",
+        "name": "pos-coverage-reports",
         "src": "frontend/emi/pos-coverage-report",
-        "assets" :"frontend/emi/assets/coverage-reports",
-        "indexHeadAmends" : [
-            "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
-            "<script src='./assets/coverage-reports/markerclusterer.js'></script>"
-        ],
+        "assets": "frontend/emi/assets/coverage-reports",        
         "groups": [
             {
-              "id": "BUSINESSES",
-              "icon": "location_searching",
-              "translate": {
-                "en": "Unidades de negocio",
-                "es": "Business units"
-              },
-              "priority": 1000
+                "id": "BUSINESSES",
+                "icon": "business",
+                "translate": {
+                    "en": "Unidades de negocio",
+                    "es": "Business units"
+                },
+                "priority": 1000
             }
-          ],
+        ],
+        "subgroups": [
+            {
+                "groupId": "REPORTS",
+                "id": "BUSINESS-REPORTS",
+                "icon": "library-books",
+                "translate": {
+                    "en": "Reports",
+                    "es": "reportes"
+                },
+                "priority": 2000
+            }
+        ],
         "contents": [
             {
-                "groupId": "BUSINESSES",
                 "id": "pos-coverage-reports",
-                "icon": "library_books",
+                "groupId": "BUSINESSES",                
+                "subgroupId": "BUSINESS-REPORTS",
+                "icon": "map",
                 "translate": {
                     "en": "Coverage",
                     "es": "cobertura"
@@ -31,15 +40,73 @@
                 "path": "pos-coverage-report",
                 "loadChildren": "./main/content/pos-coverage-report/pos-coverage-report.module#PosCoverageReportModule",
                 "priority": 1000,
-                "roles" : ["SYSADMIN"],
-                "default" : false
-            }            
+                "roles": [
+                    "SYSADMIN"
+                ],
+                "default": false
+            }
         ],
         "preBuildCommands": [
             "npm install @types/googlemaps --save",
-            "npm install @types/markerclustererplus --save" 
+            "npm install @types/markerclustererplus --save"
         ],
-        "environmentVars": {
-        }
+        "indexHeadAmends": [
+            "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
+            "<script src='./assets/coverage-reports/markerclusterer.js'></script>"
+        ],
+        "environmentVars": {}
+    },
+    {
+        "name": "business-report-dashboard",
+        "src": "frontend/emi/business-report-dashboard",
+        "assets": "frontend/emi/assets/business-report-dashboard",                
+        "groups": [
+            {
+                "id": "BUSINESSES",
+                "icon": "business",
+                "translate": {
+                    "en": "Unidades de negocio",
+                    "es": "Business units"
+                },
+                "priority": 1000
+            }
+        ],
+        "subgroups": [
+            {
+                "groupId": "REPORTS",
+                "id": "BUSINESS-REPORTS",
+                "icon": "library-books",
+                "translate": {
+                    "en": "Reports",
+                    "es": "reportes"
+                },
+                "priority": 2000
+            }
+        ],
+        "contents": [           
+            {
+                "id": "business-report-dashboard",
+                "groupId": "BUSINESSES",                
+                "subgroupId": "BUSINESS-REPORTS",
+                "icon": "dashboard",
+                "translate": {
+                    "en": "Business DashBoard",
+                    "es": "Comportamiento de Negocio"
+                },
+                "navURL": "/business-report-dashboard",
+                "path": "business-report-dashboard",
+                "loadChildren": "./main/content/business-report-dashboard/business-report-dashboard.module#BusinessReportDashboardModule",
+                "priority": 2000,
+                "roles": [
+                    "SYSADMIN","BUSINESS-OWNER"
+                ],
+                "default": false
+            }
+        ],
+        "preBuildCommands": [
+        ],
+        "indexHeadAmends": [
+        ],
+        "environmentVars": {}
     }
 ]
