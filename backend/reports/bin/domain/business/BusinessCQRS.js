@@ -1,4 +1,4 @@
-const { mergeMap, catchError, toArray } = require('rxjs/operators');
+const { mergeMap, catchError, toArray, tap } = require('rxjs/operators');
 const { throwError } = require('rxjs');
 const BusinessDA = require("../../data/BusinessDA");
 const RoleValidator = require("../../tools/RoleValidator");
