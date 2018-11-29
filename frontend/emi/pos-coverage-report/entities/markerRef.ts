@@ -58,15 +58,12 @@ export class MarkerRef extends google.maps.Marker {
   zindex_changedEvent = new Rx.Subject();
 
   contentString =
-    '<div> <h2>Detalles del vehículo</h2>' +
-    '<p> <strong>Placa: </strong>$plate</p>' +
-    '<p> <strong>Vehículo: </strong>$serial</p>' +
+    '<div> <h2>$$POS_DETAILS$$</h2>' +
+    '<p> <strong>$$POS_ID$$: </strong>$posId</p>' +
+    '<p> <strong>$$BUSISNESS_ID$$: </strong>$businessId</p>' +
+    '<p> <strong>$$USER_NAME$$: </strong>$userName</p>' +
+    '<p> <strong>$$LAST_UPDATE$$: </strong>$lastUpdate</p>' +
     '</div>';
-
-  titleString =
-    '<h2>Detalles del vehículo</h2>' +
-    '<p> <strong>Placa: </strong>$plate</p>' +
-    '<p> <strong>Vehículo: </strong>$serial</p>';
 
   infoWindow = new google.maps.InfoWindow({
     content: this.contentString
@@ -76,29 +73,17 @@ export class MarkerRef extends google.maps.Marker {
    * Historical route path of the vehicle
    */
   routePath: google.maps.Polyline;
-
   pos = null;
-
   lastTimeLocationReported = null;
-
   index = 0;
-
   deltaLat = 0;
-
   deltaLng = 0;
-
   lastLat = 0;
-
   lastLng = 0;
-
   numDeltas = 80;
-
   delay = 10;
-
   iconUrl;
-
   lastLocationPath: [LocationPath];
-
   allMap: MapRef;
 
   constructor(pos: PosPoint, opts?: google.maps.MarkerOptions) {
@@ -110,8 +95,8 @@ export class MarkerRef extends google.maps.Marker {
     // };
     this.setClickable(true);
     this.setLabel(' ');
-    this.setTitle('D-HUB');
-    // this.setDraggable(false);
+    // this.setTitle('D-HUB');
+    this.setDraggable(false);
     // this.setIcon('./assets/devices-location/tpm_bus_30_30.png');
     // this.setIcon(icon);
     this.pos = pos;
