@@ -20,7 +20,7 @@ class BusinessCQRS {
    * @param {*} args args that contain the business filters
    */
   getBusinesses$({ args }, authToken) {
-    console.log("Fetching the businesses array ...", Date.now().toLocaleString());
+    console.log("Fetching the businesses array ...", new Date().toLocaleTimeString());
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "wallet",
