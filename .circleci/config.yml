@@ -159,7 +159,7 @@ jobs:
             mkdir ~/nebulae/backend
             cp ~/nebulae/go/mbinit ~/nebulae/repo/backend/reports/
             export DOCKERHUB_IMAGE=reports.backend.reports
-            export DOCKERHUB_TAG=0.0.14
+            export DOCKERHUB_TAG=0.0.15
             gitChanged backend/reports || docker build  -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG -t $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:latest ~/nebulae/repo/backend/reports/
             gitChanged backend/reports || docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
             gitChanged backend/reports || docker push $DOCKERHUB_NAMESPACE/$DOCKERHUB_IMAGE:$DOCKERHUB_TAG
