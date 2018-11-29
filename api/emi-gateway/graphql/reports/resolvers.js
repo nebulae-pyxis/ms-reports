@@ -29,7 +29,7 @@ module.exports = {
             return broker
                 .forwardAndGetReply$(
                     "Business",
-                    "emigateway.graphql.query.getReportsBusinesses",
+                    "emi-gateway.graphql.query.getReportsBusinesses",
                     { root, args, jwt: context.encodedToken },
                     2000
                 )

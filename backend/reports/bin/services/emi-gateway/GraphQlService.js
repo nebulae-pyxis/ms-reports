@@ -151,7 +151,7 @@ class GraphQlService {
       },
       {
         aggregateType: "Business",
-        messageType: "emigateway.graphql.query.getReportsBusinesses"
+        messageType: "emi-gateway.graphql.query.getReportsBusinesses"
       }
     ];
   }
@@ -166,7 +166,7 @@ class GraphQlService {
         fn: reports.cqrs.getPosCoverage$,
         obj: reports.cqrs
       },
-      "emigateway.graphql.query.getReportsBusinesses": {
+      "emi-gateway.graphql.query.getReportsBusinesses": {
         fn: business.cqrs.getBusinesses$,
         obj: business.cqrs
       }
