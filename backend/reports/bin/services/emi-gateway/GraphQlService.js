@@ -147,11 +147,11 @@ class GraphQlService {
     console.log("GraphQl Service starting ...");
     return [
       {
-        aggregateType: "Pos",
+        aggregateType: "Report",
         messageType: "emi-gateway.graphql.query.getCoveragePos"
       },
       {
-        aggregateType: "Business",
+        aggregateType: "Report",
         messageType: "emi-gateway.graphql.query.getReportsBusinesses"
       }
     ];
