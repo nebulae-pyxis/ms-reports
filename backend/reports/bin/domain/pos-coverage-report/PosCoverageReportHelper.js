@@ -12,6 +12,7 @@ class ReportsHelper {
       _id: `${evt.data.businessId}_${evt.data.receipt.posId}`,
       lastUpdate: Date.now(),
       businessId: evt.data.businessId,
+      posId: evt.data.receipt.posId,
       products: [CIVICA_RELOAD_PRODUCT_TYPE],
       // avgReload: evt.data.receipt.reloadValue,
       pos: {

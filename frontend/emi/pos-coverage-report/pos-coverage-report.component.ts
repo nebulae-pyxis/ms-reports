@@ -1,32 +1,29 @@
 import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from './../../../core/services/translation-loader.service';
-import { reportsService } from './reports.service';
+import { FuseTranslationLoaderService } from '../../../core/services/translation-loader.service';
+import { ReportsService } from './pos-coverage-report.service';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { Subscription } from 'rxjs/Subscription';
-import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import {MatSnackBar} from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
-import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent } from './entities/markerRef';
-import { of, combineLatest, Observable, forkJoin, concat } from 'rxjs';
-import { debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
-import { mergeMap } from 'rxjs-compat/operator/mergeMap';
+import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent, PosPoint } from './entities/markerRef';
+import { of, combineLatest, Observable, forkJoin, concat, from, merge } from 'rxjs';
+import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toArray, filter, mapTo } from 'rxjs/operators';
 
 
 
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.scss'],
+  templateUrl: './pos-coverage-report.component.html',
+  styleUrls: ['./pos-coverage-report.component.scss'],
   animations: fuseAnimations
 })
-export class reportsComponent implements OnInit, OnDestroy {
-
+export class PosCoverageReportComponent implements OnInit, OnDestroy {
   isSystemAdmin = false;
   filterForm: FormGroup = new FormGroup({
     businessId: new FormControl(),
@@ -45,18 +42,23 @@ export class reportsComponent implements OnInit, OnDestroy {
   map: MapRef;
   bounds: google.maps.LatLngBounds;
   markerClusterer: MarkerCluster;
+  markers: MarkerRef[] = [];
+  selectedMarker: MarkerRef;
+
   businessVsProducts: any[];
 
   posIdOptions: string[] = ['One', 'Two', 'Three'];
-  filteredPosIdOptions: Observable<string[]>;
   SYS_ADMIN = 'SYSADMIN';
 
   productOpstions: string[];
 
   subscriptions: Subscription[] = [];
 
+
+
+
   constructor(
-    private reportService: reportsService,
+    private reportService: ReportsService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
     private keycloakService: KeycloakService
@@ -65,7 +67,8 @@ export class reportsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.initMap();
+
+    this.initMap(); // initialize the map element
 
     this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
 
@@ -118,22 +121,6 @@ export class reportsComponent implements OnInit, OnDestroy {
   .subscribe(r => {}, err => {}, () => {});
 
 
-
-
-
-    // this.reportService.getPosItems$('businessId', 'recarga_civica', null )
-    // .pipe(
-    //   map(r => JSON.parse(JSON.stringify(r))),
-    //   tap(r => console.log('this.reportService.getPosItems$', r))
-    // )
-    // .subscribe(result => this.businessVsProducts = result, err => {}, () => {});
-
-    this.filteredPosIdOptions = this.filterForm.get('posId').valueChanges
-    .pipe(
-      startWith(''),
-      map(value => this._filter(value))
-    );
-
     this.filterForm.get('businessId').valueChanges
     .pipe(
       startWith(null),
@@ -149,9 +136,73 @@ export class reportsComponent implements OnInit, OnDestroy {
         businessId: null,
         product: null,
         posId: null
-      })
+      }),
+      tap(r => console.log('FILTERS CHANGED ==> ', r)),
+      mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
+      map(r => JSON.parse(JSON.stringify(r))),
+      tap(r => console.log('this.reportService.getPosItems$', r )),
+      mergeMap(posList => this.clearMap$().pipe(mapTo(posList))),
+      mergeMap(posList => this.drawPosList$(posList)),
+      mergeMap(() => this.updateMarkerClusterer$() )
     )
-    .subscribe((change) => {console.log(change); }, err => {}, () => {});
+    .subscribe(() => {}, err => console.error(err), () => {});
+  }
+
+  /**
+   * Creates the MarkerRef object and push it to the map and the markers array
+   * @param posList List with all Pos items to draw in the map
+   */
+  drawPosList$(posList: any[]){
+    return from(posList)
+    .pipe(
+      map((p) => new MarkerRef(
+        new PosPoint(p._id, p.lastUpdate, p.businessId, p.products,  p.pos.userName, p.location ),
+        {
+          position: {
+            lat: parseFloat(p.location.coordinates.lat),
+            lng: parseFloat(p.location.coordinates.long)
+          }, map: null
+        }
+        )),
+      tap(marker => marker.setMap(this.map)),
+      tap(marker => this.addMarkerToMap(marker)),
+      toArray()
+    );
+  }
+
+  clearMap$(){
+    return from(this.markers)
+    .pipe(
+      filter(() => this.markers.length > 0),
+      map(marker => marker.setMap(null)),
+      toArray(),
+      map(() => this.markers = [])
+    );
+  }
+
+  /**
+   * Update markert clusterer, removing the markers in the cluster and then pushing the new posItems int he markers array
+   */
+  updateMarkerClusterer$() {
+    return of(this.markerClusterer)
+      .pipe(
+        // clear the cluster markers
+        map(markerCluster => {
+          if (markerCluster){
+            this.markerClusterer.clearMarkers();
+            console.log('SE HA LIPIADO EL CLUSTERER');
+          }
+          return null;
+        }),
+        filter(() => (this.markers && this.markers.length > 0)),
+        map(() => {
+          console.log('SE VAN A INSERTAR LOS MARCADORES => ', this.markers);
+          this.markerClusterer = new MarkerCluster(this.map, this.markers,
+            { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' });
+          return true;
+        })
+
+      );
   }
 
 
@@ -169,6 +220,35 @@ export class reportsComponent implements OnInit, OnDestroy {
     this.map = new MapRef(this.gmapElement.nativeElement, mapOptions);
   }
 
+   /**
+   * Adds a marker to the map and configure observables to listen to the events associated with the marker (Click, etc)
+   * @param marker marker to be added
+   */
+  addMarkerToMap(marker: MarkerRef) {
+    marker.inizialiteEvents();
+    marker.clickEvent.subscribe(event => {
+      this.onMarkerClick(marker, event);
+    });
+
+    this.markers.push(marker);
+  }
+
+  /**
+   * Opens the infoWindow of the clicked marker and closes the other infoWindows in case that these were open.
+   * @param marker clicked marker
+   * @param event Event
+   */
+  onMarkerClick(marker: MarkerRef, event) {
+    this.selectedMarker = marker;
+    this.markers.forEach(m => {
+      m.infoWindow.close();
+      m.setAnimation(null);
+    });
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+    marker.setAnimation(null);
+    marker.infoWindow.open(this.map, marker);
+  }
+
   showFilterForm(){
     console.log(this.filterForm);
   }
@@ -183,12 +263,5 @@ export class reportsComponent implements OnInit, OnDestroy {
       : this.businessVsProducts = this.businessVsProducts.reduce((acc, item) => { acc.push(...item.products); return acc; }, []);
   }
 
-  private _filter(value: string): string[] {
-    if (value) {
-      const filterValue = value.toLowerCase();
-      return this.posIdOptions.filter(option => option.toLowerCase().includes(filterValue));
-    }
-
-  }
 
 }

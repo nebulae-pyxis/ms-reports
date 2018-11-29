@@ -8,7 +8,7 @@ const { CustomError } = require('../tools/customError');
 const { Observable, defer, of } = require('rxjs');
 const { map, mergeMap } = require('rxjs/operators');
 
-class HelloWorldDA {
+class PosDA {
 
   static start$(mongoDbInstance) {
     return Rx.Observable.create((observer) => {
@@ -46,13 +46,16 @@ class HelloWorldDA {
     const collection = mongoDB.db.collection(CollectionName);
     const filter = {};
     if(businessId){ filter.businessId = businessId; }
-    if(product){ filter.product = product; }
-    if(posId){ filter.posId = posId; }
+    if(product){ filter.products = { $in:[product] } }
+    if(posId && posId != ""){
+       filter._id = { $regex: `${posId}.*`, $options: "i" }
+      }
+    console.log("FILTER ==> ", filter);
     return defer(() => collection.find(filter).toArray());
   }
 
 }
 /**
- * @returns {HelloWorldDA}
+ * @returns {PosDA}
  */
-module.exports =  HelloWorldDA 
+module.exports =  PosDA 

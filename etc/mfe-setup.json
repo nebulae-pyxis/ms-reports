@@ -1,7 +1,7 @@
 [
     {
         "name": "reports",
-        "src": "frontend/emi/reports",
+        "src": "frontend/emi/pos-coverage-report",
         "assets" :"frontend/emi/assets/coverage-reports",
         "indexHeadAmends" : [
             "<script src='https://maps.googleapis.com/maps/api/js?key=AIzaSyAkzd7-w65ShAhK4dpBr2PjFvnemFnyKbQ' async defer></script>",
@@ -21,15 +21,15 @@
         "contents": [
             {
                 "groupId": "BUSINESSES",
-                "id": "reports-coverage",
+                "id": "pos-coverage-reports",
                 "icon": "library_books",
                 "translate": {
                     "en": "Coverage",
                     "es": "cobertura"
                 },
-                "navURL": "/reports",
-                "path": "reports",
-                "loadChildren": "./main/content/reports/reports.module#reportsModule",
+                "navURL": "/pos-coverage-report",
+                "path": "pos-coverage-report",
+                "loadChildren": "./main/content/pos-coverage-report/pos-coverage-report.module#PosCoverageReportModule",
                 "priority": 1000,
                 "roles" : ["SYSADMIN"],
                 "default" : false

@@ -4,18 +4,29 @@ import * as Rx from 'rxjs/Rx';
 
 import { MapRef } from './agmMapRef';
 
-export class Vehicle {
-  plate = '';
-  serial = '';
-  groupName = '';
-  lastLocationTimestamp: number = undefined;
-  cpuUsageAlarmActivated = false;
-  ramUsageAlarmActivated = false;
-  sdUsageAlarmActivated = false;
-  temperatureAlarmActivated = false;
-  online = false;
-}
+export class PosPoint {
+  _id: string;
+  lastUpdate: number;
+  businessId: string;
+  products: string[];
+  pos: { userName: string, userId: string, terminal: any };
+  location: { type: string, coordinates: { lat: number, long: number } };
+  constructor(
+    _id: string,
+    lastUpdate: number,
+    businessId: string,
+    products: string[],
+    pos: { userName: string, userId: string, terminal: any },
+    location: { type: string, coordinates: { lat: number, long: number } }){
+      this._id = _id;
+      this.lastUpdate = lastUpdate;
+      this.businessId =  businessId;
+      this.products = products;
+      this.pos = pos;
+      this.location = location;
 
+  }
+}
 
 export class LocationPath {
   lat: number;
@@ -24,7 +35,6 @@ export class LocationPath {
 }
 
 export class MarkerRef extends google.maps.Marker {
-
   animation_changedEvent = new Rx.Subject();
   clickEvent = new Rx.Subject<google.maps.MouseEvent>();
   clickable_changedEvent = new Rx.Subject();
@@ -47,15 +57,13 @@ export class MarkerRef extends google.maps.Marker {
   visible_changedEvent = new Rx.Subject();
   zindex_changedEvent = new Rx.Subject();
 
-
-  contentString = '<div> <h2>Detalles del vehículo</h2>' +
-    '<p> <strong>Placa: </strong>$plate</p>' +
-    '<p> <strong>Vehículo: </strong>$serial</p>' +
+  contentString =
+    '<div> <h2>$$POS_DETAILS$$</h2>' +
+    '<p> <strong>$$POS_ID$$: </strong>$posId</p>' +
+    '<p> <strong>$$BUSISNESS_ID$$: </strong>$businessId</p>' +
+    '<p> <strong>$$USER_NAME$$: </strong>$userName</p>' +
+    '<p> <strong>$$LAST_UPDATE$$: </strong>$lastUpdate</p>' +
     '</div>';
-
-  titleString = '<h2>Detalles del vehículo</h2>' +
-    '<p> <strong>Placa: </strong>$plate</p>' +
-    '<p> <strong>Vehículo: </strong>$serial</p>';
 
   infoWindow = new google.maps.InfoWindow({
     content: this.contentString
@@ -65,33 +73,20 @@ export class MarkerRef extends google.maps.Marker {
    * Historical route path of the vehicle
    */
   routePath: google.maps.Polyline;
-
-  vehicle = null;
-
+  pos = null;
   lastTimeLocationReported = null;
-
   index = 0;
-
   deltaLat = 0;
-
   deltaLng = 0;
-
   lastLat = 0;
-
   lastLng = 0;
-
   numDeltas = 80;
-
   delay = 10;
-
   iconUrl;
-
   lastLocationPath: [LocationPath];
-
   allMap: MapRef;
 
-
-  constructor(vehicle: Vehicle, opts?: google.maps.MarkerOptions) {
+  constructor(pos: PosPoint, opts?: google.maps.MarkerOptions) {
     super(opts);
     // const icon = {
     //   url: "./assets/devices-location/bus.svg",
@@ -100,11 +95,11 @@ export class MarkerRef extends google.maps.Marker {
     // };
     this.setClickable(true);
     this.setLabel(' ');
-    this.setTitle('D-HUB');
-    //this.setDraggable(false);
-    //this.setIcon('./assets/devices-location/tpm_bus_30_30.png');
+    // this.setTitle('D-HUB');
+    this.setDraggable(false);
+    // this.setIcon('./assets/devices-location/tpm_bus_30_30.png');
     // this.setIcon(icon);
-    this.vehicle = vehicle;
+    this.pos = pos;
     this.lastTimeLocationReported = 0;
     this.updateIcon();
   }
@@ -113,17 +108,15 @@ export class MarkerRef extends google.maps.Marker {
    * Updates the marker icon according to the vehicle states (Online, Alarmed, Offline)
    */
   updateIcon() {
-    let newIconUrl = "./assets/devices-location/busOnline.svg";
-    if ((this.vehicle.ramUsageAlarmActivated
-      || this.vehicle.sdUsageAlarmActivated
-      || this.vehicle.cpuUsageAlarmActivated
-      || this.vehicle.temperatureAlarmActivated) && this.vehicle.online) {
-      newIconUrl = "./assets/devices-location/busAlarmed.svg";
-    } else if (this.vehicle.online) {
-      newIconUrl = "./assets/devices-location/busOnline.svg";
-    } else {
-      newIconUrl = "./assets/devices-location/busOffline.svg";
-    }
+    const newIconUrl = './assets/coverage-reports/bus_yellow.png';
+    // if (
+    //   ( this.vehicle.online ) {
+    //   newIconUrl = './assets/devices-location/busAlarmed.svg';
+    // } else if (this.vehicle.online) {
+    //   newIconUrl = './assets/devices-location/busOnline.svg';
+    // } else {
+    //   newIconUrl = './assets/devices-location/busOffline.svg';
+    // }
 
     // console.log(" Icon: ", newIconUrl, (newIconUrl != this.iconUrl), " Vehicle: ", this.vehicle);
 
@@ -135,8 +128,8 @@ export class MarkerRef extends google.maps.Marker {
     //   newIconUrl = "./assets/devices-location/busOnline.svg";
     // }
 
-    //We only upodate the icon if it had changed.
-    if (newIconUrl != this.iconUrl) {
+    // We only upodate the icon if it had changed.
+    if (newIconUrl !== this.iconUrl) {
       this.iconUrl = newIconUrl;
       const icon = {
         url: newIconUrl,
@@ -155,8 +148,15 @@ export class MarkerRef extends google.maps.Marker {
    * @param lastTimeLocationReported
    * @param vehicle
    */
-  updateData(lng: number, lat: number, delay: number, timeLocationReported: number, ramUsageAlarmActivated: Boolean,
-    sdUsageAlarmActivated: Boolean, cpuUsageAlarmActivated: Boolean, temperatureAlarmActivated: Boolean, online: Boolean, center = false, showDisconnectedDevices = true) {
+  updateData(
+    lng: number,
+    lat: number,
+    delay: number,
+    timeLocationReported: number,
+    online: Boolean,
+    center = false,
+    showDisconnectedDevices = true
+  ) {
     this.setVisibility(100);
     this.index = 0;
 
@@ -165,17 +165,7 @@ export class MarkerRef extends google.maps.Marker {
     this.lastLat = lat;
     this.lastLng = lng;
 
-    this.vehicle.ramUsageAlarmActivated = ramUsageAlarmActivated;
-
-    this.vehicle.sdUsageAlarmActivated = sdUsageAlarmActivated;
-
-    this.vehicle.cpuUsageAlarmActivated = cpuUsageAlarmActivated;
-
-    this.vehicle.temperatureAlarmActivated = temperatureAlarmActivated;
-
-    this.vehicle.online = online;
-
-    if(!online && !showDisconnectedDevices){
+    if (!online && !showDisconnectedDevices) {
       this.setVisible(showDisconnectedDevices);
     }
 
@@ -190,11 +180,15 @@ export class MarkerRef extends google.maps.Marker {
    * @param initCallBack
    * @param endCallBack
    */
-  moveMarkerSmoothly(timeLocationReported: number, center = false, initCallBack?, endCallBack?) {
-    //The marker only can be moved if the time of the new location is greater than the time of the last location reported
+  moveMarkerSmoothly(
+    timeLocationReported: number,
+    center = false,
+    initCallBack?,
+    endCallBack?
+  ) {
+    // The marker only can be moved if the time of the new location is greater than the time of the last location reported
     if (this.lastTimeLocationReported < timeLocationReported) {
-
-      if(initCallBack){
+      if (initCallBack) {
         initCallBack(this);
       }
 
@@ -207,8 +201,7 @@ export class MarkerRef extends google.maps.Marker {
     this.allMap = map;
   }
 
-
-  changeRoutePathVisibility(visible: boolean){
+  changeRoutePathVisibility(visible: boolean) {
     this.routePath.setVisible(visible);
   }
 
@@ -224,7 +217,7 @@ export class MarkerRef extends google.maps.Marker {
     if (this.routePath) {
       if (this.lastLocationPath && this.lastLocationPath.length > 0) {
         if (this.lastLocationPath[0].timestamp > locationPath[0].timestamp) {
-          //It means that the location path received is older, therefore, we cannot take this new location path.
+          // It means that the location path received is older, therefore, we cannot take this new location path.
           return;
         }
       }
@@ -233,10 +226,13 @@ export class MarkerRef extends google.maps.Marker {
       this.routePath.setMap(null);
     }
 
-    let routePathCoordinates = [];
+    const routePathCoordinates = [];
 
     for (let i = 0; i < locationPath.length; i++) {
-      routePathCoordinates.push({ lat: locationPath[i].lat, lng: locationPath[i].lng });
+      routePathCoordinates.push({
+        lat: locationPath[i].lat,
+        lng: locationPath[i].lng
+      });
     }
 
     this.routePath = new google.maps.Polyline({
@@ -253,28 +249,24 @@ export class MarkerRef extends google.maps.Marker {
   moveMarker(center = false, endCallBack?) {
     const lat = this.getPosition().lat() + this.deltaLat;
     const lng = this.getPosition().lng() + this.deltaLng;
-    this.setPosition(
-      new google.maps.LatLng(lat, lng)
-    );
+    this.setPosition(new google.maps.LatLng(lat, lng));
 
     if (this.allMap) {
       this.allMap.setCenter(this.getPosition());
     }
 
-    if (this.index != this.numDeltas) {
+    if (this.index !== this.numDeltas) {
       this.index++;
       setTimeout(this.moveMarker.bind(this), this.delay);
     } else {
-      const lat = this.lastLat;
-      const lng = this.lastLng;
-      this.setPosition(
-        new google.maps.LatLng(lat, lng)
-      );
+      const _lat = this.lastLat;
+      const _lng = this.lastLng;
+      this.setPosition(new google.maps.LatLng(_lat, _lng));
       if (this.allMap) {
         this.allMap.setCenter(this.getPosition());
       }
 
-      if(endCallBack){
+      if (endCallBack) {
         endCallBack(this);
       }
     }
@@ -289,14 +281,19 @@ export class MarkerRef extends google.maps.Marker {
   }
 
   inizialiteEvents() {
-    this.addListener('click', (e: google.maps.MouseEvent) => { this.clickEvent.next(e); });
-    this.addListener('dblclick', (e) => { this.dblclickEvent.next(e); });
-    //this.addListener('dragend', (e) => { this.dragendEvent.next(e); });
+    this.addListener('click', (e: google.maps.MouseEvent) => {
+      this.clickEvent.next(e);
+    });
+    this.addListener('dblclick', e => {
+      this.dblclickEvent.next(e);
+    });
+    // this.addListener('dragend', (e) => { this.dragendEvent.next(e); });
     // this.addListener('position_changed', (e) => { this.position_changedEvent.next(e); });
   }
 }
 
-export const MarkerRefInfoWindowContent = '<html><style>#deviceInfoWindow input:hover {color: blue;}</style><body>   <div id="deviceInfoWindow">' +
+export const MarkerRefInfoWindowContent =
+  '<html><style>#deviceInfoWindow input:hover {color: blue;}</style><body>   <div id="deviceInfoWindow">' +
   '<p align="right"><input type="button" name="Edit" value="{FOLLOW}" onclick="window.DeviceViewerReference.zone.run(() => {window.DeviceViewerReference.componentFn();});"></p>' +
   '<p> <strong>{PLATE}: </strong>$plate</p>' +
   '<p> <strong>{VEHICLE}: </strong>$serial</p>' +
@@ -304,11 +301,10 @@ export const MarkerRefInfoWindowContent = '<html><style>#deviceInfoWindow input:
   '<p align="right"> $lastLocationTimestamp </p>' +
   '<p align="right"> <strong> {LAST_LOCATION_TIMESTAMP} </strong> </p>' +
   //  '<input type="button" name="Edit" value="{SEE_MORE}" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">' +
+  // tslint:disable-next-line:max-line-length
   '<div style="display:inline-block"><p align="right"> <input type="button" name="Edit" value="{SEE_MORE}" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">' +
-  //'<a href="#" type="button" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">{TITLE}</a>' +
-  //'">'+
+  // '<a href="#" type="button" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">{TITLE}</a>' +
+  // '">'+
   '</div></body></html>';
 
-export const MarkerRefTitleContent =
-  '{PLATE}: $plate, ' +
-  '{VEHICLE}: $serial';
+export const MarkerRefTitleContent = '{PLATE}: $plate, ' + '{VEHICLE}: $serial';
