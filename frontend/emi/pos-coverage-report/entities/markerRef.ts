@@ -67,7 +67,7 @@ export class MarkerRef extends google.maps.Marker {
    * Historical route path of the vehicle
    */
   routePath: google.maps.Polyline;
-  pos: PosPoint = null;
+  posPoint: PosPoint = null;
   lastTimeLocationReported = null;
   index = 0;
   deltaLat = 0;
@@ -80,7 +80,7 @@ export class MarkerRef extends google.maps.Marker {
   lastLocationPath: [LocationPath];
   allMap: MapRef;
 
-  constructor(pos: PosPoint, opts?: google.maps.MarkerOptions) {
+  constructor(posPoint: PosPoint, opts?: google.maps.MarkerOptions) {
     super(opts);
     // const icon = {
     //   url: "./assets/devices-location/bus.svg",
@@ -93,7 +93,7 @@ export class MarkerRef extends google.maps.Marker {
     this.setDraggable(false);
     // this.setIcon('./assets/devices-location/tpm_bus_30_30.png');
     // this.setIcon(icon);
-    this.pos = pos;
+    this.posPoint = posPoint;
     this.lastTimeLocationReported = 0;
     this.updateIcon();
   }
