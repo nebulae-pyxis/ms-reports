@@ -22,6 +22,7 @@ class ReportsES {
  
 
   handleCivicaCardReload$(evt){
+    console.log("handleCivicaCardReload$", JSON.stringify(evt));
     return of(evt)    
     .pipe(
       mergeMap(evt => Helper.extractPosInfoFromCivicaCadReloadEvt(evt)),
