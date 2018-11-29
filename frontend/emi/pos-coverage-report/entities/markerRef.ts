@@ -57,13 +57,7 @@ export class MarkerRef extends google.maps.Marker {
   visible_changedEvent = new Rx.Subject();
   zindex_changedEvent = new Rx.Subject();
 
-  contentString =
-    '<div> <h2>$$POS_DETAILS$$</h2>' +
-    '<p> <strong>$$POS_ID$$: </strong>$posId</p>' +
-    '<p> <strong>$$BUSISNESS_ID$$: </strong>$businessId</p>' +
-    '<p> <strong>$$USER_NAME$$: </strong>$userName</p>' +
-    '<p> <strong>$$LAST_UPDATE$$: </strong>$lastUpdate</p>' +
-    '</div>';
+  contentString = MarkerRefOriginalInfoWindowContent;
 
   infoWindow = new google.maps.InfoWindow({
     content: this.contentString
@@ -73,7 +67,7 @@ export class MarkerRef extends google.maps.Marker {
    * Historical route path of the vehicle
    */
   routePath: google.maps.Polyline;
-  pos = null;
+  pos: PosPoint = null;
   lastTimeLocationReported = null;
   index = 0;
   deltaLat = 0;
@@ -292,19 +286,18 @@ export class MarkerRef extends google.maps.Marker {
   }
 }
 
-export const MarkerRefInfoWindowContent =
-  '<html><style>#deviceInfoWindow input:hover {color: blue;}</style><body>   <div id="deviceInfoWindow">' +
-  '<p align="right"><input type="button" name="Edit" value="{FOLLOW}" onclick="window.DeviceViewerReference.zone.run(() => {window.DeviceViewerReference.componentFn();});"></p>' +
-  '<p> <strong>{PLATE}: </strong>$plate</p>' +
-  '<p> <strong>{VEHICLE}: </strong>$serial</p>' +
-  '<p> <strong>{GROUPNAME}: </strong>$groupName</p>' +
-  '<p align="right"> $lastLocationTimestamp </p>' +
-  '<p align="right"> <strong> {LAST_LOCATION_TIMESTAMP} </strong> </p>' +
-  //  '<input type="button" name="Edit" value="{SEE_MORE}" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">' +
-  // tslint:disable-next-line:max-line-length
-  '<div style="display:inline-block"><p align="right"> <input type="button" name="Edit" value="{SEE_MORE}" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">' +
-  // '<a href="#" type="button" onclick="window.angularComponentReference.zone.run(() => {window.angularComponentReference.componentFn(\'test\');});">{TITLE}</a>' +
-  // '">'+
-  '</div></body></html>';
+export const MarkerRefOriginalInfoWindowContent =
+  `<html>
+    <body>
+        <div id="deviceInfoWindow">
+        <h2>$$POS_DETAILS$$</h2>
+        <p> <strong>$$POS_ID$$: </strong>{POS_ID}</p>
+        <p> <strong>$$BUSISNESS_ID$$: </strong>{BUSISNESS_ID}</p>
+        <p> <strong>$$USER_NAME$$: </strong>{USER_NAME}</p>
+        <p> <strong>$$LAST_UPDATE$$: </strong>{LAST_UPDATE}</p>
+      </div>
+    </body>
+  </html>
+  `;
 
 export const MarkerRefTitleContent = '{PLATE}: $plate, ' + '{VEHICLE}: $serial';

@@ -14,6 +14,15 @@ export const locale = {
     },
     PRODUCTS: {
       CIVICA_CARD_RELOAD: 'Civica card reload'
+    },
+    MARKER: {
+      INFOWINDOW: {
+        POS_DETAILS: 'Pos details',
+        POS_ID: 'POS Id',
+        BUSISNESS_ID: 'Business Id',
+        USER_NAME: 'User name',
+        LAST_UPDATE: 'Last sale'
+      }
     }
   }
 };

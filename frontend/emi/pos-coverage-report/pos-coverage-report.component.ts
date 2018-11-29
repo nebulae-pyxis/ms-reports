@@ -7,15 +7,14 @@ import { fuseAnimations } from '../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { Subscription } from 'rxjs/Subscription';
+import { DatePipe } from '@angular/common';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
-import { MarkerRef, PosPoint } from './entities/markerRef';
-import { of, concat, from } from 'rxjs';
+import { MarkerRef, PosPoint, MarkerRefOriginalInfoWindowContent } from './entities/markerRef';
+import { of, concat, from, forkJoin } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toArray, filter, mapTo } from 'rxjs/operators';
-
-
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -47,21 +46,17 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   selectedMarker: MarkerRef;
 
   businessVsProducts: any[];
-
   SYS_ADMIN = 'SYSADMIN';
-
   productOpstions: string[];
-
   subscriptions: Subscription[] = [];
-
-
-
 
   constructor(
     private reportService: ReportsService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
+    private translateService: TranslateService,
+    private datePipe: DatePipe
     ) {
       this.translationLoader.loadTranslations(english, spanish);
   }
@@ -69,27 +64,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.initMap(); // initialize the map element
-
     this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
-
-    this.subscriptions.push(
-      this.filterForm.get('businessId').valueChanges
-      .pipe(
-        tap( newSelectedBusinessId => {
-          this.productOpstions =
-            (this.isSystemAdmin && newSelectedBusinessId === 'null')
-              ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
-              : this.businessVsProducts.find(e => e.businessId === newSelectedBusinessId).products;
-          this.productOpstions = this.productOpstions.filter(this.onlyUnique);
-          if (!this.productOpstions.includes(this.filterForm.get('product').value)){
-            this.filterForm.get('product').setValue(null);
-          }
-          this.filterForm.get('posId').setValue(null);
-        })
-      )
-      .subscribe(r => {}, error => console.error(), () => {})
-    );
-
+    this.initObservables();
 
   concat(
     // update the [isSysAdmin] variable
@@ -97,7 +73,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
     .pipe(
       tap((isSysAdm) => this.isSystemAdmin = isSysAdm )
     ),
-    // fect the business and its products opstions
+    // fetch the business and its products options
     this.reportService.getBusinessAndProducts$()
     .pipe(
       map(r => JSON.parse(JSON.stringify(r))),
@@ -106,7 +82,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         return acc;
       }, [])),
       map( (businessOptions: any[]) => {
-        if (this.isSystemAdmin){          
+        if (this.isSystemAdmin){
           businessOptions.push({ businessName: 'ALL-TODAS', businessId: 'null', products: [] });
         }
         return businessOptions;
@@ -117,32 +93,30 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
 
   )
   .subscribe(r => {}, err => {}, () => {});
+  }
 
 
-    this.filterForm.get('businessId').valueChanges
-    .pipe(
-      startWith(null),
-      tap(buId => this.updateAvailableProducts(buId))
-    ).subscribe(result => this.businessVsProducts = result, err => {}, () => {});
+   /**
+   * Adjusts the zoom according to the markers
+   */
+  adjustZoomAccordingToTheMarkers$(){
+    return of(new google.maps.LatLngBounds())
+      .pipe(
+        map(bounds => this.bounds = bounds),
+        mergeMap(() => from(this.markers)
+          .pipe(
+            map(marker => new google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng())),
+            tap(coordinates => this.bounds.extend(coordinates)),
+            toArray()
+          )
+        ),
+        map(() => {
+          this.map.fitBounds(this.bounds);
+          this.map.panToBounds(this.bounds);
+        })
+      );
 
 
-    this.filterForm.valueChanges
-    .pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      startWith({
-        businessId: null,
-        product: null,
-        posId: null
-      }),
-      map(filters => filters.businessId === 'null' ? {...filters, businessId: null} : {...filters} ),
-      mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
-      map(r => JSON.parse(JSON.stringify(r))),
-      mergeMap(posList => this.clearMap$().pipe(mapTo(posList))),
-      mergeMap(posList => this.drawPosList$(posList)),
-      mergeMap(() => this.updateMarkerClusterer$() )
-    )
-    .subscribe(() => {}, err => console.error(err), () => {});
   }
 
   /**
@@ -223,6 +197,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
    */
   addMarkerToMap(marker: MarkerRef) {
     marker.inizialiteEvents();
+
     marker.clickEvent.subscribe(event => {
       this.onMarkerClick(marker, event);
     });
@@ -246,10 +221,6 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
     marker.infoWindow.open(this.map, marker);
   }
 
-  showFilterForm(){
-    console.log(this.filterForm);
-  }
-
   onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
   }
@@ -258,6 +229,98 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
     (businessId && businessId !== 'null')
       ? this.businessVsProducts = this.businessVsProducts.find(e => businessId === businessId).products
       : this.businessVsProducts = this.businessVsProducts.reduce((acc, item) => { acc.push(...item.products); return acc; }, []);
+  }
+
+  initObservables(){
+
+    this.subscriptions.push(
+      this.filterForm.get('businessId').valueChanges
+        .pipe(
+          tap(newSelectedBusinessId => {
+            this.productOpstions =
+              (this.isSystemAdmin && newSelectedBusinessId === 'null')
+                ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
+                : this.businessVsProducts.find(e => e.businessId === newSelectedBusinessId).products;
+            this.productOpstions = this.productOpstions.filter(this.onlyUnique);
+            if (!this.productOpstions.includes(this.filterForm.get('product').value)) {
+              this.filterForm.get('product').setValue(null);
+            }
+            this.filterForm.get('posId').setValue(null);
+          })
+        )
+        .subscribe(r => { }, error => console.error(), () => { })
+    );
+
+    this.subscriptions.push(
+      this.filterForm.get('businessId').valueChanges
+        .pipe(
+          startWith(null),
+          tap(buId => this.updateAvailableProducts(buId)),
+          tap(result => this.businessVsProducts = result)
+        )
+        .subscribe(() => { }, err => { }, () => { })
+    );
+
+    this.subscriptions.push(
+      // listen the filter changes ...
+      this.filterForm.valueChanges
+        .pipe(
+          debounceTime(500),
+          distinctUntilChanged(),
+          startWith({
+            businessId: null,
+            product: null,
+            posId: null
+          }),
+          map(filters => filters.businessId === 'null' ? { ...filters, businessId: null } : { ...filters }),
+          mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
+          map(r => JSON.parse(JSON.stringify(r))),
+          mergeMap(posList => this.clearMap$().pipe(mapTo(posList))),
+          mergeMap(posList => this.drawPosList$(posList)),
+          mergeMap(() => this.updateMarkerClusterer$()),
+          mergeMap(() => forkJoin(
+            this.adjustZoomAccordingToTheMarkers$(),
+            of(this.translateService.currentLang)
+            .pipe(
+              map(language => this.translateService.translations[language].MARKER.INFOWINDOW ),
+              tap(r => console.log('##########', r)),
+              mergeMap( translations => this.updateMarkerInfoWindowContent$(translations) )
+            )
+
+          ))
+        )
+        .subscribe(() => { }, err => console.error(err), () => { })
+    );
+
+    this.subscriptions.push(
+      this.translateService.onLangChange
+      .pipe(
+        map(lang => lang.translations.MARKER.INFOWINDOW),
+        mergeMap(translations => this.updateMarkerInfoWindowContent$(translations) )
+      )
+      .subscribe(() => { }, err => console.error(err), () => { })
+    );
+  }
+
+  updateMarkerInfoWindowContent$(translations: any) {
+    return from(this.markers)
+      .pipe(
+        tap(),
+        map((marker) => ({
+          marker: marker,
+          infoWindowContent: MarkerRefOriginalInfoWindowContent
+            .replace('$$POS_DETAILS$$', translations.POS_DETAILS)
+            .replace('$$POS_ID$$', translations.POS_ID)
+            .replace('$$BUSISNESS_ID$$', translations.BUSISNESS_ID)
+            .replace('$$USER_NAME$$', translations.USER_NAME)
+            .replace('$$LAST_UPDATE$$', translations.LAST_UPDATE)
+            .replace('{POS_ID}', marker.pos._id)
+            .replace('{BUSISNESS_ID}', marker.pos.businessId)
+            .replace('{USER_NAME}', marker.pos.pos.userName)
+            .replace('{LAST_UPDATE}', this.datePipe.transform(new Date(marker.pos.lastUpdate), 'dd-MM-yyyy HH:mm'))
+        })),
+        map(({ marker, infoWindowContent }) => marker.infoWindow.setContent(infoWindowContent))
+      );
   }
 
 
