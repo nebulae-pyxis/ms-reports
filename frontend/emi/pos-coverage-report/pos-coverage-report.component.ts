@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { KeycloakService } from 'keycloak-angular';
 import { FuseTranslationLoaderService } from '../../../core/services/translation-loader.service';
 import { ReportsService } from './pos-coverage-report.service';
@@ -7,11 +8,11 @@ import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
 import { Subscription } from 'rxjs/Subscription';
 import { FormGroup, FormControl } from '@angular/forms';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
-import { MarkerRef, MarkerRefInfoWindowContent, MarkerRefTitleContent, PosPoint } from './entities/markerRef';
-import { of, combineLatest, Observable, forkJoin, concat, from, merge } from 'rxjs';
+import { MarkerRef, PosPoint } from './entities/markerRef';
+import { of, concat, from } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toArray, filter, mapTo } from 'rxjs/operators';
 
 
@@ -47,7 +48,6 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
 
   businessVsProducts: any[];
 
-  posIdOptions: string[] = ['One', 'Two', 'Three'];
   SYS_ADMIN = 'SYSADMIN';
 
   productOpstions: string[];
@@ -77,10 +77,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       .pipe(
         tap( newSelectedBusinessId => {
           this.productOpstions =
-            (this.isSystemAdmin && newSelectedBusinessId == null)
-              ? this.businessVsProducts.reduce((acc, item) => {
-                acc.push(...item.products); return acc;
-              }, [])
+            (this.isSystemAdmin && newSelectedBusinessId === 'null')
+              ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
               : this.businessVsProducts.find(e => e.businessId === newSelectedBusinessId).products;
           this.productOpstions = this.productOpstions.filter(this.onlyUnique);
           if (!this.productOpstions.includes(this.filterForm.get('product').value)){
@@ -94,12 +92,12 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
 
 
   concat(
-
+    // update the [isSysAdmin] variable
     of(this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN))
     .pipe(
       tap((isSysAdm) => this.isSystemAdmin = isSysAdm )
     ),
-
+    // fect the business and its products opstions
     this.reportService.getBusinessAndProducts$()
     .pipe(
       map(r => JSON.parse(JSON.stringify(r))),
@@ -108,8 +106,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         return acc;
       }, [])),
       map( (businessOptions: any[]) => {
-        if (this.isSystemAdmin){
-          businessOptions.push({ businessName: 'ALL-TODAS', businessId: null, products: [] });
+        if (this.isSystemAdmin){          
+          businessOptions.push({ businessName: 'ALL-TODAS', businessId: 'null', products: [] });
         }
         return businessOptions;
       }),
@@ -137,10 +135,9 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         product: null,
         posId: null
       }),
-      tap(r => console.log('FILTERS CHANGED ==> ', r)),
+      map(filters => filters.businessId === 'null' ? {...filters, businessId: null} : {...filters} ),
       mergeMap(filters => this.reportService.getPosItems$(filters.businessId, filters.product, filters.posId)),
       map(r => JSON.parse(JSON.stringify(r))),
-      tap(r => console.log('this.reportService.getPosItems$', r )),
       mergeMap(posList => this.clearMap$().pipe(mapTo(posList))),
       mergeMap(posList => this.drawPosList$(posList)),
       mergeMap(() => this.updateMarkerClusterer$() )
@@ -258,7 +255,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   }
 
   updateAvailableProducts(businessId) {
-    (businessId)
+    (businessId && businessId !== 'null')
       ? this.businessVsProducts = this.businessVsProducts.find(e => businessId === businessId).products
       : this.businessVsProducts = this.businessVsProducts.reduce((acc, item) => { acc.push(...item.products); return acc; }, []);
   }
