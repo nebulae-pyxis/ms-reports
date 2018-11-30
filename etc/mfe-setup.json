@@ -60,7 +60,7 @@
     {
         "name": "business-report-dashboard",
         "src": "frontend/emi/business-report-dashboard",
-        "assets": "frontend/emi/assets/business-report-dashboard",                
+        
         "groups": [
             {
                 "id": "BUSINESSES",
