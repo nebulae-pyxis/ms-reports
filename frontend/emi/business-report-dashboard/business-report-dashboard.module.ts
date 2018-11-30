@@ -10,6 +10,18 @@ import { BusinessReportDashboardComponent } from './business-report-dashboard.co
 import { BusinessReportDashboardBonusLineChartComponent } from './widgets/bonus-line-chart/business-report-dashboard-bonus-line-chart.component';
 import { BusinessReportDashboardBonusLineChartService } from './widgets/bonus-line-chart/business-report-dashboard-bonus-line-chart.service';
 
+import { BusinessReportDashboardWalletStatusCardsComponent } from './widgets/wallet-status-cards/business-report-dashboard-wallet-status-cards.component';
+import { BusinessReportDashboardWalletStatusCardsService } from './widgets/wallet-status-cards/business-report-dashboard-wallet-status-cards.service';
+
+import { BusinessReportDashboardSalesOverviewComponent } from './widgets/sales-overview/business-report-dashboard-sales-overview.component';
+import { BusinessReportDashboardSalesOverviewService } from './widgets/sales-overview/business-report-dashboard-sales-overview.service';
+
+import { BusinessReportDashboardNetSalesDistributionComponent } from './widgets/net-sales-distribution/business-report-dashboard-net-sales-distribution.component';
+import { BusinessReportDashboardNetSalesDistributionService } from './widgets/net-sales-distribution/business-report-dashboard-net-sales-distribution.service';
+
+import { BusinessReportDashboardNetBonusDistributionComponent } from './widgets/net-bonus-distribution/business-report-dashboard-net-bonus-distribution.component';
+import { BusinessReportDashboardNetBonusDistributionService } from './widgets/net-bonus-distribution/business-report-dashboard-net-bonus-distribution.service';
+
 const routes: Routes = [
   {
     path: '',
@@ -26,8 +38,20 @@ const routes: Routes = [
   ],
   declarations: [
     BusinessReportDashboardComponent,
-    BusinessReportDashboardBonusLineChartComponent
+    BusinessReportDashboardBonusLineChartComponent,
+    BusinessReportDashboardWalletStatusCardsComponent,
+    BusinessReportDashboardSalesOverviewComponent,
+    BusinessReportDashboardNetSalesDistributionComponent,
+    BusinessReportDashboardNetBonusDistributionComponent,
   ],
-  providers: [ BusinessReportDashboardService, BusinessReportDashboardBonusLineChartService,DatePipe]
+  providers: [
+    DatePipe,
+    BusinessReportDashboardService,
+    BusinessReportDashboardBonusLineChartService,
+    BusinessReportDashboardWalletStatusCardsService,
+    BusinessReportDashboardSalesOverviewService,
+    BusinessReportDashboardNetSalesDistributionService,
+    BusinessReportDashboardNetBonusDistributionService
+  ]
 })
-export class BusinessReportDashboardModule{};
+export class BusinessReportDashboardModule { };
