@@ -14,6 +14,15 @@ export const locale = {
     },
     PRODUCTS: {
       CIVICA_CARD_RELOAD: 'Recarga cívica'
+    },
+    MARKER: {
+      INFOWINDOW: {
+        POS_DETAILS: 'Detalles del POS',
+        POS_ID: 'ID del POS',
+        BUSISNESS_ID: 'Unidad de negocio',
+        USER_NAME: 'Nombre de usuario',
+        LAST_UPDATE: 'Última venta'
+      }
     }
   }
 };

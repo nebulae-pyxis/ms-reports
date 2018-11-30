@@ -25,11 +25,12 @@ module.exports = {
     //// QUERY ///////
 
     Query: {
+        
         ReportBusinesses(root, args, context) {
             return broker
                 .forwardAndGetReply$(
-                    "Business",
-                    "emigateway.graphql.query.getWalletBusinesses",
+                    "Report",
+                    "emi-gateway.graphql.query.getReportsBusinesses",
                     { root, args, jwt: context.encodedToken },
                     2000
                 )
@@ -39,7 +40,7 @@ module.exports = {
         ReportPosItems(root, args, context) {
             return broker
                 .forwardAndGetReply$(
-                    "Pos",
+                    "Report",
                     "emi-gateway.graphql.query.getCoveragePos",
                     { root, args, jwt: context.encodedToken },
                     2000
@@ -67,7 +68,6 @@ module.exports = {
 
     }
 };
-
 
 //// SUBSCRIPTIONS SOURCES ////
 

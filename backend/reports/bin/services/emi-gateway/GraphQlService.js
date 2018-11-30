@@ -53,6 +53,7 @@ class GraphQlService {
     const handler = this.functionMap[messageType];
     const subscription = broker
       .getMessageListener$([aggregateType], [messageType]).pipe(
+        tap(r => console.log("##### ON REQUEST ==> ", JSON.stringify({topic: r.topic, type: r.type, data: { args: r.data.args }}))),
         mergeMap(message => this.verifyRequest$(message)),
         mergeMap(request => ( request.failedValidations.length > 0)
           ? Rx.of(request.errorResponse)
@@ -146,12 +147,12 @@ class GraphQlService {
     console.log("GraphQl Service starting ...");
     return [
       {
-        aggregateType: "Pos",
+        aggregateType: "Report",
         messageType: "emi-gateway.graphql.query.getCoveragePos"
       },
       {
-        aggregateType: "Business",
-        messageType: "emigateway.graphql.query.getWalletBusinesses"
+        aggregateType: "Report",
+        messageType: "emi-gateway.graphql.query.getReportsBusinesses"
       }
     ];
   }
@@ -166,7 +167,7 @@ class GraphQlService {
         fn: reports.cqrs.getPosCoverage$,
         obj: reports.cqrs
       },
-      "emigateway.graphql.query.getWalletBusinesses": {
+      "emi-gateway.graphql.query.getReportsBusinesses": {
         fn: business.cqrs.getBusinesses$,
         obj: business.cqrs
       }
