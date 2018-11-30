@@ -103,6 +103,7 @@ export class MarkerRef extends google.maps.Marker {
    */
   updateIcon() {
     const newIconUrl = './assets/coverage-reports/pos_02.png';
+    
     // if (
     //   ( this.vehicle.online ) {
     //   newIconUrl = './assets/devices-location/busAlarmed.svg';

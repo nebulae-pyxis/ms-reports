@@ -10,7 +10,6 @@ let instance;
 class ReportsCQRS {
   constructor() {}
 
-
   getPosCoverage$({ args }, authToken){
     console.log(args);
     return PosDA.getPosCoverage$(args.businessId, args.product, args.posId)

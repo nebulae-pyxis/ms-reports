@@ -53,8 +53,7 @@ class GraphQlService {
     const handler = this.functionMap[messageType];
     const subscription = broker
       .getMessageListener$([aggregateType], [messageType]).pipe(
-        tap(r => console.log("##### ON REQUEST ==> ", JSON.stringify({topic: r.topic, type: r.type, data: { args: r.data.args }}))),
-        mergeMap(message => this.verifyRequest$(message)),
+       mergeMap(message => this.verifyRequest$(message)),
         mergeMap(request => ( request.failedValidations.length > 0)
           ? Rx.of(request.errorResponse)
           : Rx.of(request).pipe(
