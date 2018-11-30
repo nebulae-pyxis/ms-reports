@@ -102,7 +102,8 @@ export class MarkerRef extends google.maps.Marker {
    * Updates the marker icon according to the vehicle states (Online, Alarmed, Offline)
    */
   updateIcon() {
-    const newIconUrl = './assets/coverage-reports/bus_yellow.png';
+    const newIconUrl = './assets/coverage-reports/pos_02.png';
+    
     // if (
     //   ( this.vehicle.online ) {
     //   newIconUrl = './assets/devices-location/busAlarmed.svg';
@@ -127,8 +128,8 @@ export class MarkerRef extends google.maps.Marker {
       this.iconUrl = newIconUrl;
       const icon = {
         url: newIconUrl,
-        anchor: new google.maps.Point(30, 30),
-        scaledSize: new google.maps.Size(30, 30)
+        anchor: new google.maps.Point(40, 40),
+        scaledSize: new google.maps.Size(40, 40)
       };
       this.setIcon(icon);
     }
