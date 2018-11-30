@@ -148,11 +148,11 @@ class GraphQlService {
     return [
       {
         aggregateType: "Report",
-        messageType: "emi-gateway.graphql.query.getCoveragePos"
+        messageType: "emigateway.graphql.query.getCoveragePos"
       },
       {
         aggregateType: "Report",
-        messageType: "emi-gateway.graphql.query.getReportsBusinesses"
+        messageType: "emigateway.graphql.query.getReportsBusinesses"
       }
     ];
   }
@@ -163,11 +163,11 @@ class GraphQlService {
    */
   generateFunctionMap() {    
     return {      
-      "emi-gateway.graphql.query.getCoveragePos": {
+      "emigateway.graphql.query.getCoveragePos": {
         fn: reports.cqrs.getPosCoverage$,
         obj: reports.cqrs
       },
-      "emi-gateway.graphql.query.getReportsBusinesses": {
+      "emigateway.graphql.query.getReportsBusinesses": {
         fn: business.cqrs.getBusinesses$,
         obj: business.cqrs
       }
