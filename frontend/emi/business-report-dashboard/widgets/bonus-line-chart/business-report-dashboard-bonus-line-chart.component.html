@@ -3,31 +3,34 @@
   <div class="position-relative p-24 mat-blue-600-bg" fxLayout="row" fxLayoutAlign="space-between center">
     <div fxLayout="column" fxLayoutAlign="start start">
       <span class="h2">Bonus</span>
-      <span class="h5 secondary-text">Bonus Earnings</span>
+      <span class="h5 secondary-text">Bonus Earnings ({{bonusLineChartData.timeSpans[timeSpanSelected].scale}}) </span>
     </div>
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <div class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer" (click)="bonusLineChartSelectedYear = '2014'"
-        [ngClass]="{'blue-300-bg': bonusLineChartSelectedYear === '2014'}">
-        2014
+
+
+    <div fxLayout="column" fxLayoutAlign="start center">
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div *ngFor="let tso of timeSpanOptions" class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
+          (click)="updateTimeSpan(tso);" [ngClass]="{'blue-300-bg': timeSpanSelected === tso}">
+          {{tso}}
+        </div>
       </div>
-      <div class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer" (click)="bonusLineChartSelectedYear = '2015'"
-        [ngClass]="{'blue-300-bg': bonusLineChartSelectedYear === '2015'}">
-        2015
-      </div>
-      <div class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer" (click)="bonusLineChartSelectedYear = '2016'"
-        [ngClass]="{'blue-300-bg': bonusLineChartSelectedYear === '2016'}">
-        2016
-      </div>
-      <div class="py-8 px-12 border-radius-2 line-height-1 cursor-pointer" (click)="bonusLineChartSelectedYear = '2017'"
-        [ngClass]="{'blue-300-bg': bonusLineChartSelectedYear === '2017'}">
-        2017
+
+
+
+      <div fxLayout="row" fxLayoutAlign="start center">
+
+        <div *ngFor="let dso of bonusLineChartData.timeSpans[timeSpanSelected].datasetOptions" class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
+          (click)="updateSubTimeSpan(dso);" [ngClass]="{'blue-300-bg': subTimeSpanSelected === dso}">
+          {{dso}}
+        </div>
       </div>
     </div>
   </div>
 
   <div class="position-relative h-256 pb-16 mat-blue-600-bg">
-    <canvas baseChart [datasets]="bonusLineChartData.datasets[bonusLineChartSelectedYear]" [labels]="bonusLineChartData.labels"
-      [colors]="bonusLineChartData.colors" [options]="bonusLineChartData.options" [chartType]="bonusLineChartData.chartType">
+    <canvas baseChart [datasets]="bonusLineChartData.timeSpans[timeSpanSelected].datasets[subTimeSpanSelected]"
+      [labels]="chartLabels" [colors]="bonusLineChartData.colors" [options]="bonusLineChartData.options"
+      [chartType]="bonusLineChartData.chartType">
     </canvas>
   </div>
 
