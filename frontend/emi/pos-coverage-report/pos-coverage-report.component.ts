@@ -95,7 +95,6 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   .subscribe(r => {}, err => {}, () => {});
   }
 
-
    /**
    * Adjusts the zoom according to the markers
    */

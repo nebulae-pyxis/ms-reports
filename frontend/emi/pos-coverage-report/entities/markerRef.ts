@@ -101,6 +101,7 @@ export class MarkerRef extends google.maps.Marker {
   /**
    * Updates the marker icon according to the vehicle states (Online, Alarmed, Offline)
    */
+  
   updateIcon() {
     const newIconUrl = './assets/coverage-reports/pos_02.png';
     
