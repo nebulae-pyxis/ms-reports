@@ -8,7 +8,7 @@ import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
-import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
+import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
 import { BusinessReportDashboardWalletStatusCardsService } from './business-report-dashboard-wallet-status-cards.service';
 
 
@@ -17,18 +17,14 @@ import { BusinessReportDashboardWalletStatusCardsService } from './business-repo
   selector: 'business-report-dashboard-wallet-status-cards',
   templateUrl: './business-report-dashboard-wallet-status-cards.component.html',
   styleUrls: ['./business-report-dashboard-wallet-status-cards.component.scss'],
-  
+
   animations: fuseAnimations
 })
 export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit, OnDestroy {
 
-  isSystemAdmin = false;
-  SYS_ADMIN = 'SYSADMIN';
-
-
-  productOpstions: string[];
 
   subscriptions: Subscription[] = [];
+  dataset: any;
 
   constructor(
     private businessReportDashboardWalletStatusCardsService: BusinessReportDashboardWalletStatusCardsService,
@@ -40,8 +36,8 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
   }
 
   ngOnInit() {
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
-
+    this.loadInitialData();
+    this.loadDataset();
   }
 
 
@@ -49,74 +45,71 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-
-  projects: any[];
-  selectedProject: any;
-  widgets = {
-    'widget1': {
-      'ranges': {
-        'DY': 'Yesterday',
-        'DT': 'Today',
-        'DTM': 'Tomorrow'
-      },
-      'currentRange': 'DT',
-      'data': {
-        'label': 'DUE TASKS',
-        'count': {
-          'DY': 21,
-          'DT': 25,
-          'DTM': 19
-        },
-        'extra': {
-          'label': 'Completed',
-          'count': {
-            'DY': 6,
-            'DT': 7,
-            'DTM': '-'
-          }
-
-        }
-      },
-      'detail': 'You can show some detailed information about this widget in here.'
-    },
-    'widget2': {
-      'title': 'Overdue',
-      'data': {
-        'label': 'TASKS',
-        'count': 4,
-        'extra': {
-          'label': 'Yesterday\'s overdue',
-          'count': 2
-        }
-      },
-      'detail': 'You can show some detailed information about this widget in here.'
-    },
-    'widget3': {
-      'title': 'Issues',
-      'data': {
-        'label': 'OPEN',
-        'count': 32,
-        'extra': {
-          'label': 'Closed today',
-          'count': 0
-        }
-      },
-      'detail': 'You can show some detailed information about this widget in here.'
-    },
-    'widget4': {
-      'title': 'Features',
-      'data': {
-        'label': 'PROPOSALS',
-        'count': 42,
-        'extra': {
-          'label': 'Implemented',
-          'count': 8
-        }
-      },
-      'detail': 'You can show some detailed information about this widget in here.'
-    },    
+  loadInitialData() {
+    this.dataset = [0, 1, 2, 3].map(i => ({
+      title: '---',
+      value: '---',
+      valueDesc: '',
+      lastUpdate: 0,
+      valueColor: 'gray-fg',
+    }));
   };
 
+  loadDataset() {
+    of({
+      spendingAllowed: true,
+      pockets: [
+        {
+          order: 1,
+          name: 'MAIN',
+          balance: 12000000,
+          lastUpdate: Date.now(),
+          currency: 'PESOS',
+        },
+        {
+          order: 2,
+          name: 'BONUS',
+          balance: 120000,
+          lastUpdate: Date.now(),
+          currency: 'PESOS',
+        },
+        {
+          order: 3,
+          name: 'CREDIT',
+          balance: 115000,
+          lastUpdate: Date.now(),
+          currency: 'PESOS',
+        },
+      ]
+    }).pipe(
+      delay(1000)
+    ).subscribe(
+      (dataset) => this.buildDataset(dataset),
+      (err) => console.error(err),
+      () => { }
+    );
+  }
+
+  buildDataset(walletStatus) {
+    walletStatus.pockets.sort((p1, p2) => p1.order - p2.order);
+    const dataset = walletStatus.pockets
+      .map(p => ({
+        title: p.name,
+        value: p.balance,
+        valueDesc: p.currency,
+        valueColor: 'dark-grey-fg',
+        valueIsCurrency: true,
+        lastUpdate: p.lastUpdate
+      }));
+    dataset.push({
+      title: 'Spending Allowed',
+      value: 'YES',
+      valueDesc: '',
+      lastUpdate: Date.now(),
+      valueColor: 'green-fg',
+    });
+    this.dataset = dataset;
+  }
 
 
 }

@@ -113,7 +113,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
   updateDataset(dataset){
     this.bonusLineChartData = this.formatDataSet(dataset);
-    console.log(JSON.stringify(this.bonusLineChartData));
+    //console.log(JSON.stringify(this.bonusLineChartData));
     this.timeSpanOptions = Object.keys(dataset)
       .map(k => ({ ...dataset[k], k }))
       .sort((o1, o2) => o1.order - o2.order)
