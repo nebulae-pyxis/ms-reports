@@ -1,0 +1,46 @@
+<!-- WIDGET 6 -->
+<fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+
+        <!-- Front -->
+        <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
+
+                <div class="px-16 py-8 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
+                        <div class="h3">{{widgets.widget6.title}}</div>
+                        <mat-form-field>
+                                <mat-select class="simplified" [(ngModel)]="widget6.currentRange" aria-label="Change range">
+                                        <mat-option *ngFor="let range of widgets.widget6.ranges | keys" [value]="range.key">
+                                                {{range.value}}
+                                        </mat-option>
+                                </mat-select>
+                        </mat-form-field>
+                </div>
+
+                <div class="h-400">
+                        <ngx-charts-pie-chart *fuseIfOnDom [scheme]="widget6.scheme" [results]="widgets.widget6.mainChart[widget6.currentRange]"
+                                [legend]="widget6.showLegend" [explodeSlices]="widget6.explodeSlices" [labels]="widget6.labels"
+                                [doughnut]="widget6.doughnut" [gradient]="widget6.gradient" (select)="widget6.onSelect($event)">
+                        </ngx-charts-pie-chart>
+                </div>
+
+                <div class="py-8 mh-16 border-top" fxLayout="row" fxLayoutAlign="start center" fxLayoutWrap>
+                        <div class="py-8 border-right" fxLayout="column" fxLayoutAlign="center center" fxFlex="100"
+                                fxFlex.gt-sm="50">
+                                <span class="mat-display-1 mb-0">
+                                        {{widgets.widget6.footerLeft.count[widget6.currentRange]}}
+                                </span>
+                                <span class="h4">{{widgets.widget6.footerLeft.title}}</span>
+                        </div>
+
+                        <div class="py-8" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" fxFlex.gt-sm="50">
+                                <span class="mat-display-1 mb-0">
+                                        {{widgets.widget6.footerRight.count[widget6.currentRange]}}
+                                </span>
+                                <span class="h4">{{widgets.widget6.footerRight.title}}</span>
+                        </div>
+                </div>
+
+        </div>
+        <!-- / Front -->
+
+</fuse-widget>
+<!-- / WIDGET 6 -->

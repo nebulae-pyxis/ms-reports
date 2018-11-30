@@ -2,7 +2,9 @@
 
 #business-report-dashboard {
 
-    
+
+
+
     .content {
         display: flex;
         flex: 1 1 auto;
@@ -40,6 +42,11 @@
                 max-width: none;
             }
         }
+    }
+
+
+    .content-cards {
+        flex: 1;
     }
 
 }
