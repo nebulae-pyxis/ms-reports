@@ -1,6 +1,6 @@
 import { KeycloakService } from 'keycloak-angular';
 import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, HostListener } from '@angular/core';
 import { fuseAnimations } from '../../../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
@@ -8,7 +8,7 @@ import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
-import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
+import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
 import { BusinessReportDashboardBonusLineChartService } from './business-report-dashboard-bonus-line-chart.service';
 
 
@@ -21,26 +21,31 @@ import { BusinessReportDashboardBonusLineChartService } from './business-report-
 })
 export class BusinessReportDashboardBonusLineChartComponent implements OnInit, OnDestroy {
 
-  isSystemAdmin = false;
-  SYS_ADMIN = 'SYSADMIN';
+  timeSpanSelected = '---'
+  subTimeSpanSelected = '---'
+  chartLabels = [];
 
-
-  productOpstions: string[];
+  bonusLineChartData;
 
   subscriptions: Subscription[] = [];
+  timeSpanOptions: string[];
+  windowSize: number[];
+
 
   constructor(
     private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,
     private translationLoader: FuseTranslationLoaderService,
     public snackBar: MatSnackBar,
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
   ) {
     this.translationLoader.loadTranslations(english, spanish);
   }
 
   ngOnInit() {
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
+    this.windowSize = [window.innerWidth, window.innerHeight];
     this.registerCustomChartJSPlugin();
+    this.loadInitialDataset();
+    this.loadDataset();
   }
 
 
@@ -48,11 +53,109 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
+  loadInitialDataset(){
+    const dataset = {
+      '---': {
+        scale : '---',
+        order: 3,
+        labels: ['---', '---', '---', '---', '---', '---', '---'],
+        datasets: [
+          { order: 1, label: '---', data: [0, 0, 0, 0, 0, 0, 0] },
+        ]
+      },      
+    };
+    this.updateDataset(dataset);
+  }
+
+  loadDataset() {
+    of({
+      'YEAR': {
+        order: 3,
+        scale: 'THOUSANDS',
+        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+        datasets: [
+          { order: 3, label: '2015', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
+          { order: 2, label: '2016', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
+          { order: 1, label: '2017', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
+        ]
+      },
+      'MONTH': {
+        order: 2,
+        scale: 'THOUSANDS',
+        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9',
+          '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
+          '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
+        datasets: [
+          { order: 3, label: 'FEB', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9, 1.9, 3.2, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
+          { order: 2, label: 'MAR', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8, 2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
+          { order: 1, label: 'JUN', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
+        ]
+      },
+      'WEEK': {
+        order: 1,
+        scale: 'THOUSANDS',
+        labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'],
+        datasets: [
+          { order: 1, label: 'CURRENT', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
+          { order: 2, label: 'PAST', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
+          { order: 3, label: '2 WEEKS AGO', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
+        ]
+      },
+    }).pipe(
+      delay(1000),      
+    ).subscribe(
+      (dataset => this.updateDataset(dataset)),
+      (error) => console.error(error),
+      () => {}
+    );
+    
+  }
+
+  updateDataset(dataset){
+    this.bonusLineChartData = this.formatDataSet(dataset);
+    console.log(JSON.stringify(this.bonusLineChartData));
+    this.timeSpanOptions = Object.keys(dataset)
+      .map(k => ({ ...dataset[k], k }))
+      .sort((o1, o2) => o1.order - o2.order)
+      .map(o => o.k);
+    this.updateTimeSpan(this.timeSpanOptions[0]);    
+  }
+
+
+  updateTimeSpan(timeSpan) {
+    this.timeSpanSelected = timeSpan;
+    const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;
+    this.updateSubTimeSpan(options[options.length -1]);
+    this.updateChartLabels();
+  }
+
+  updateSubTimeSpan(subTimeSpan) {
+    this.subTimeSpanSelected = subTimeSpan;
+  }
+
+  updateChartLabels() {
+    //This is the only work-around to force labels updates
+    this.chartLabels.length = 0;
+    this.bonusLineChartData.timeSpans[this.timeSpanSelected].labels.slice().forEach(l => this.chartLabels.push(l))
+  }
+
+
+
 
   /**
-   * Register a custom plugin
+   * Listens and keeps tracks of windo size
+   * @param event window resize
+   */
+  @HostListener('window:resize', ['$event'])
+  onResize(event) {
+    this.windowSize = [window.innerWidth, window.innerHeight];
+  }
+
+  /**
+   * Register a custom plugin to draw the dashed line with the value on top
    */
   registerCustomChartJSPlugin() {
+    const that = this;
     (<any>window).Chart.plugins.register({
       afterDatasetsDraw: function (chart, easing) {
         // Only activate the plugin if it's made available
@@ -67,39 +170,46 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
         // To only draw at the end of animation, check for easing === 1
         const ctx = chart.ctx;
 
+
         chart.data.datasets.forEach(function (dataset, i) {
           const meta = chart.getDatasetMeta(i);
           if (!meta.hidden) {
             meta.data.forEach(function (element, index) {
+              const wh = that.windowSize[0];
+              if (wh > 390) {
+                // Draw the text in black, with the specified font
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                const ln = meta.data.length;
+                const fontSize =
+                  ln < 10 ? 13
+                    : ln < 20 ? (wh < 500 ? 10 : wh < 900 ? 13 : 13)
+                      : wh < 500 ? 5 : wh < 900 ? 8 : 13;
+                const fontStyle = 'normal';
+                const fontFamily = 'Roboto, Helvetica Neue, Arial';
+                ctx.font = (<any>window).Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
 
-              // Draw the text in black, with the specified font
-              ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-              const fontSize = 13;
-              const fontStyle = 'normal';
-              const fontFamily = 'Roboto, Helvetica Neue, Arial';
-              ctx.font = (<any>window).Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+                // Just naively convert to string for now
+                const dataString = dataset.data[index].toString();
 
-              // Just naively convert to string for now
-              const dataString = dataset.data[index].toString() + 'k';
+                // Make sure alignment settings are correct
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const padding = 15;
+                const startY = 24;
+                const position = element.tooltipPosition();
+                ctx.fillText(dataString, position.x, startY);
 
-              // Make sure alignment settings are correct
-              ctx.textAlign = 'center';
-              ctx.textBaseline = 'middle';
-              const padding = 15;
-              const startY = 24;
-              const position = element.tooltipPosition();
-              ctx.fillText(dataString, position.x, startY);
+                ctx.save();
 
-              ctx.save();
+                ctx.beginPath();
+                ctx.setLineDash([5, 3]);
+                ctx.moveTo(position.x, startY + padding);
+                ctx.lineTo(position.x, position.y - padding);
+                ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+                ctx.stroke();
 
-              ctx.beginPath();
-              ctx.setLineDash([5, 3]);
-              ctx.moveTo(position.x, startY + padding);
-              ctx.lineTo(position.x, position.y - padding);
-              ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-              ctx.stroke();
-
-              ctx.restore();
+                ctx.restore();
+              }
             });
           }
         });
@@ -107,107 +217,99 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     });
   }
 
-
-
-  bonusLineChartSelectedYear = '2016';
-  bonusLineChartSelectedDay = 'today';
-  bonusLineChartData = {
-    chartType: 'line',
-    datasets: {
-      '2015': [
+  /**
+   * REcieves a dataset and format it to be chart compatible
+   */
+  formatDataSet(dataSet) {
+    const result = {
+      timeSpans: {},
+      chartType: 'line',
+      colors: [
         {
-          label: 'Sales',
-          data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9],
-          fill: 'start'
-
+          borderColor: '#42a5f5',
+          backgroundColor: '#42a5f5',
+          pointBackgroundColor: '#1e88e5',
+          pointHoverBackgroundColor: '#1e88e5',
+          pointBorderColor: '#ffffff',
+          pointHoverBorderColor: '#ffffff'
         }
       ],
-      '2016': [
-        {
-          label: 'Sales',
-          data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8],
-          fill: 'start'
-
-        }
-      ],
-      '2017': [
-        {
-          label: 'Sales',
-          data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9],
-          fill: 'start'
-
-        }
-      ]
-
-    },
-    labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-    colors: [
-      {
-        borderColor: '#42a5f5',
-        backgroundColor: '#42a5f5',
-        pointBackgroundColor: '#1e88e5',
-        pointHoverBackgroundColor: '#1e88e5',
-        pointBorderColor: '#ffffff',
-        pointHoverBorderColor: '#ffffff'
-      }
-    ],
-    options: {
-      spanGaps: false,
-      legend: {
-        display: false
-      },
-      maintainAspectRatio: false,
-      layout: {
-        padding: {
-          top: 32,
-          left: 32,
-          right: 32
-        }
-      },
-      elements: {
-        point: {
-          radius: 4,
-          borderWidth: 2,
-          hoverRadius: 4,
-          hoverBorderWidth: 2
+      options: {
+        spanGaps: false,
+        legend: {
+          display: false
         },
-        line: {
-          tension: 0
-        }
-      },
-      scales: {
-        xAxes: [
-          {
-            gridLines: {
+        maintainAspectRatio: false,
+        layout: {
+          padding: {
+            top: 32,
+            left: 32,
+            right: 32
+          }
+        },
+        elements: {
+          point: {
+            radius: 4,
+            borderWidth: 2,
+            hoverRadius: 4,
+            hoverBorderWidth: 2
+          },
+          line: {
+            tension: 0
+          }
+        },
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+                drawBorder: false,
+                tickMarkLength: 10
+              },
+              ticks: {
+                fontColor: '#ffffff'
+              }
+            }
+          ],
+          yAxes: [
+            {
               display: false,
-              drawBorder: false,
-              tickMarkLength: 18
-            },
-            ticks: {
-              fontColor: '#ffffff'
+              ticks: {
+                min: 1.5,
+                max: 5,
+                stepSize: 0.5
+              }
             }
-          }
-        ],
-        yAxes: [
-          {
-            display: false,
-            ticks: {
-              min: 1.5,
-              max: 5,
-              stepSize: 0.5
-            }
-          }
-        ]
-      },
-      plugins: {
-        filler: {
-          propagate: false
+          ]
         },
-        xLabelsOnTop: {
-          active: true
+        plugins: {
+          filler: {
+            propagate: false
+          },
+          xLabelsOnTop: {
+            active: true
+          }
         }
       }
-    }
-  };
+
+    };
+
+    Object.keys(dataSet).forEach(timeSpan => {
+      result.timeSpans[timeSpan] = {
+        labels: dataSet[timeSpan].labels,
+        datasets: {},
+        scale:dataSet[timeSpan].scale,
+        datasetOptions: []
+      };
+      dataSet[timeSpan].datasets.sort((d1, d2) => d2.order - d1.order);
+      dataSet[timeSpan].datasets.forEach(d => {
+        result.timeSpans[timeSpan].datasetOptions.push(d.label);
+        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];
+      })
+
+    });
+
+    return result;
+  }
 
 }
