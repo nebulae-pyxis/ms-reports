@@ -87,7 +87,7 @@
         "contents": [           
             {
                 "id": "business-report-dashboard",
-                "groupId": "BUSINESSES",                
+                "groupId": "BUSINESS_UNIT_MANAGER",                
                 "subgroupId": "BUSINESS_REPORTS",
                 "icon": "dashboard",
                 "translate": {
