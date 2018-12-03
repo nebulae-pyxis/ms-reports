@@ -18,7 +18,7 @@
             {
                 "groupId": "BUSINESS_UNIT_MANAGER",
                 "id": "BUSINESS_REPORTS",
-                "icon": "account_balance_wallet",
+                "icon": "library_books",
                 "translate": {
                     "en": "Reports",
                     "es": "reportes"
@@ -76,7 +76,7 @@
             {
                 "groupId": "BUSINESS_UNIT_MANAGER",
                 "id": "BUSINESS_REPORTS",
-                "icon": "account_balance_wallet",
+                "icon": "library_books",
                 "translate": {
                     "en": "Reports",
                     "es": "reportes"
