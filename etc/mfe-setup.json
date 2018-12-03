@@ -5,32 +5,32 @@
         "assets": "frontend/emi/assets/coverage-reports",        
         "groups": [
             {
-                "id": "BUSINESSES",
-                "icon": "business",
-                "translate": {
-                    "en": "Unidades de negocio",
-                    "es": "Business units"
-                },
-                "priority": 1000
+            "id": "BUSINESS_UNIT_MANAGER",
+            "icon": "location_searching",
+            "translate": {
+                "en": "Business units",
+                "es": "Unidades de negocio"
+            },
+            "priority": 200
             }
-        ],
+          ],
         "subgroups": [
             {
-                "groupId": "REPORTS",
-                "id": "BUSINESS-REPORTS",
+                "groupId": "BUSINESS_UNIT_MANAGER",
+                "id": "BUSINESS_REPORTS",
                 "icon": "library-books",
                 "translate": {
                     "en": "Reports",
                     "es": "reportes"
                 },
-                "priority": 2000
+                "priority": 1000
             }
         ],
         "contents": [
             {
                 "id": "pos-coverage-reports",
-                "groupId": "BUSINESSES",                
-                "subgroupId": "BUSINESS-REPORTS",
+                "groupId": "BUSINESS_UNIT_MANAGER",                
+                "subgroupId": "BUSINESS_REPORTS",
                 "icon": "map",
                 "translate": {
                     "en": "Coverage",
@@ -63,25 +63,25 @@
         
         "groups": [
             {
-                "id": "BUSINESSES",
-                "icon": "business",
-                "translate": {
-                    "en": "Unidades de negocio",
-                    "es": "Business units"
-                },
-                "priority": 1000
+            "id": "BUSINESS_UNIT_MANAGER",
+            "icon": "location_searching",
+            "translate": {
+                "en": "Business units",
+                "es": "Unidades de negocio"
+            },
+            "priority": 200
             }
-        ],
-        "subgroups": [
+          ],
+          "subgroups": [
             {
-                "groupId": "REPORTS",
-                "id": "BUSINESS-REPORTS",
+                "groupId": "BUSINESS_UNIT_MANAGER",
+                "id": "BUSINESS_REPORTS",
                 "icon": "library-books",
                 "translate": {
                     "en": "Reports",
                     "es": "reportes"
                 },
-                "priority": 2000
+                "priority": 1000
             }
         ],
         "contents": [           
