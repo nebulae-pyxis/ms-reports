@@ -1,24 +1,17 @@
-<!-- WIDGET 6 -->
-<fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" fxLayout="column" fxFlex="100" fxFlex.gt-sm="50">
+<fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" >
 
         <!-- Front -->
         <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
 
                 <div class="px-16 py-8 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
-                        <div class="h3">{{widgets.widget6.title}}</div>
-                        <mat-form-field>
-                                <mat-select class="simplified" [(ngModel)]="widget6.currentRange" aria-label="Change range">
-                                        <mat-option *ngFor="let range of widgets.widget6.ranges | keys" [value]="range.key">
-                                                {{range.value}}
-                                        </mat-option>
-                                </mat-select>
-                        </mat-form-field>
+                        <div class="h3">{{ !chardData ? initialData['---']['---'].title : chardData.title}}</div>
                 </div>
 
                 <div class="h-400">
-                        <ngx-charts-pie-chart *fuseIfOnDom [scheme]="widget6.scheme" [results]="widgets.widget6.mainChart[widget6.currentRange]"
-                                [legend]="widget6.showLegend" [explodeSlices]="widget6.explodeSlices" [labels]="widget6.labels"
-                                [doughnut]="widget6.doughnut" [gradient]="widget6.gradient" (select)="widget6.onSelect($event)">
+                        <ngx-charts-pie-chart *fuseIfOnDom [scheme]="chartConfigs.scheme" [results]="!chardData ? initialData['---']['---'].mainChart : chardData[timeSpanSelected][subTimeSpanSelected].mainChart"
+                                [legend]="chartConfigs.showLegend" [explodeSlices]="chartConfigs.explodeSlices"
+                                [labels]="chartConfigs.labels" [doughnut]="chartConfigs.doughnut" [gradient]="chartConfigs.gradient"
+                                (select)="chartConfigs.onSelect($event)">
                         </ngx-charts-pie-chart>
                 </div>
 
@@ -26,16 +19,22 @@
                         <div class="py-8 border-right" fxLayout="column" fxLayoutAlign="center center" fxFlex="100"
                                 fxFlex.gt-sm="50">
                                 <span class="mat-display-1 mb-0">
-                                        {{widgets.widget6.footerLeft.count[widget6.currentRange]}}
+                                        {{!chardData ? initialData['---']['---'].footerLeft.count :
+                                        chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.count |
+                                        currency:'CLP':'$'}}
                                 </span>
-                                <span class="h4">{{widgets.widget6.footerLeft.title}}</span>
+                                <span class="h4">{{!chardData ? initialData['---']['---'].footerLeft.title :
+                                        chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.title}}</span>
                         </div>
 
                         <div class="py-8" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" fxFlex.gt-sm="50">
                                 <span class="mat-display-1 mb-0">
-                                        {{widgets.widget6.footerRight.count[widget6.currentRange]}}
+                                        {{ !chardData ? initialData['---']['---'].footerRight.count :
+                                        chardData[timeSpanSelected][subTimeSpanSelected].footerRight.count |
+                                        currency:'CLP':''}}
                                 </span>
-                                <span class="h4">{{widgets.widget6.footerRight.title}}</span>
+                                <span class="h4">{{ !chardData ? initialData['---']['---'].footerRight.title :
+                                        chardData[timeSpanSelected][subTimeSpanSelected].footerRight.title}}</span>
                         </div>
                 </div>
 
@@ -43,4 +42,3 @@
         <!-- / Front -->
 
 </fuse-widget>
-<!-- / WIDGET 6 -->

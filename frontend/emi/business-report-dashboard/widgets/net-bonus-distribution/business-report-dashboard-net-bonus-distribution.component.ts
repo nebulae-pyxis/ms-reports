@@ -9,7 +9,7 @@ import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { of, combineLatest, Observable, forkJoin, concat, Subscription, fromEvent } from 'rxjs';
-import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map } from 'rxjs/operators';
+import { mergeMap, debounceTime, delay, startWith, tap, map } from 'rxjs/operators';
 import { BusinessReportDashboardNetBonusDistributionService } from './business-report-dashboard-net-bonus-distribution.service';
 
 
@@ -25,10 +25,38 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
 
   @Input() businessId;
   @Input() timeSpanSelected;
+  @Input() subTimeSpanSelected;
 
-  productOpstions: string[];
 
-  subscriptions: Subscription[] = [];
+  initialData = {
+    'title': 'BONUS_DISTRIBUTION',
+    '---': {
+      '---': {
+        'mainChart': [{ name: '...', value: 100 }],
+        'footerLeft': { 'title': 'Bonus', 'count': 0 },
+        'footerRight': { 'title': 'Count', 'count': 0 },
+      }
+    }
+  };
+
+  subscriptions: Subscription[] = []
+  chardData = undefined;
+
+
+  chartConfigs = {
+    legend: false,
+    explodeSlices: false,
+    labels: true,
+    doughnut: true,
+    gradient: false,
+    showLegend: false,
+    scheme: {
+      domain: ['#f44336', '#9c27b0', '#03a9f4', '#e91e63']
+    },
+    onSelect: (ev) => {
+      console.log(ev);
+    }
+  };
 
   constructor(
     private businessReportDashboardNetBonusDistributionService: BusinessReportDashboardNetBonusDistributionService,
@@ -37,121 +65,68 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
     private keycloakService: KeycloakService
   ) {
     this.translationLoader.loadTranslations(english, spanish);
-
-    /**
-         * Widget 6
-         */
-    this.widget6 = {
-      currentRange: 'TW',
-      legend: false,
-      explodeSlices: false,
-      labels: true,
-      doughnut: true,
-      gradient: false,
-      scheme: {
-        domain: ['#f44336', '#9c27b0', '#03a9f4', '#e91e63']
-      },
-      onSelect: (ev) => {
-        console.log(ev);
-      }
-    };
   }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+
+    of((
+      [
+        {
+          timespan: "YEAR", datasets: [
+            { timespan: '2017', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: '2016', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: '2015', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+          ],
+        },
+        {
+          timespan: "MONTH", datasets: [
+            { timespan: 'FEB', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: 'MAR', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: 'JUN', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+          ],
+        },
+        {
+          timespan: "WEEK", datasets: [
+            { timespan: '2 WEEKS AGO', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: 'PAST', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+            { timespan: 'CURRENT', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
+          ],
+        },
+      ]
+    )).pipe(
+      delay(1000),
+      map(ds => this.formatData(ds))
+    ).subscribe(
+      (fds) => this.chardData = fds,
+      (err) => console.error(err),
+      () => { }
+    );
+  }
+
+  formatData(datasets) {
+    const formated = datasets.reduce((form, obj) => {
+      form[obj.timespan] = obj.datasets.reduce((dataset, ds) => {
+        dataset[ds.timespan] = {
+          'mainChart': ds.dataset.map(d => ({ name: d.product, value: d.percentage })),
+          'footerLeft': { 'title': 'Bonus', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
+          'footerRight': { 'title': 'Count', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
+        }
+        return dataset;
+      }, {});
+      return form;
+    }, {});
+    formated.title = 'BONUS_DISTRIBUTION';
+    return formated;
   }
 
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
-
-
-  widget6: any = {};
-  widgets = {
-    'widget6': {
-      'title': 'Task Distribution',
-      'ranges': {
-        'TW': 'This Week',
-        'LW': 'Last Week',
-        '2W': '2 Weeks Ago'
-      },
-      'mainChart': {
-        'TW': [
-          {
-            'name': 'Frontend',
-            'value': 15
-          },
-          {
-            'name': 'Backend',
-            'value': 20
-          },
-          {
-            'name': 'API',
-            'value': 38
-          },
-          {
-            'name': 'Issues',
-            'value': 27
-          }
-        ],
-        'LW': [
-          {
-            'name': 'Frontend',
-            'value': 19
-          },
-          {
-            'name': 'Backend',
-            'value': 16
-          },
-          {
-            'name': 'API',
-            'value': 42
-          },
-          {
-            'name': 'Issues',
-            'value': 23
-          }
-        ],
-        '2W': [
-          {
-            'name': 'Frontend',
-            'value': 18
-          },
-          {
-            'name': 'Backend',
-            'value': 17
-          },
-          {
-            'name': 'API',
-            'value': 40
-          },
-          {
-            'name': 'Issues',
-            'value': 25
-          }
-        ]
-      },
-      'footerLeft': {
-        'title': 'Tasks Added',
-        'count': {
-          '2W': 487,
-          'LW': 526,
-          'TW': 594
-        }
-      },
-      'footerRight': {
-        'title': 'Tasks Completed',
-        'count': {
-          '2W': 193,
-          'LW': 260,
-          'TW': 287
-        }
-      }
-    },
-  };
-
-
-
 
 
 }
