@@ -8,6 +8,7 @@ const { PERMISSION_DENIED_ERROR, INTERNAL_SERVER_ERROR } = require("../../tools/
 
 let instance;
 
+
 class BusinessCQRS {
   constructor() {}
 
