@@ -4,10 +4,7 @@ const BusinessDA = require("../../data/BusinessDA");
 const RoleValidator = require("../../tools/RoleValidator");
 const { CustomError, DefaultError } = require("../../tools/customError");
 const { buildSuccessResponse$, handleError$ } = require('../../tools/GraphqlResponseTools');
-const {
-  PERMISSION_DENIED_ERROR,
-  INTERNAL_SERVER_ERROR
-} = require("../../tools/ErrorCodes");
+const { PERMISSION_DENIED_ERROR, INTERNAL_SERVER_ERROR } = require("../../tools/ErrorCodes");
 
 let instance;
 
