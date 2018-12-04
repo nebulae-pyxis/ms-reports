@@ -22,8 +22,8 @@ import { BusinessReportDashboardService } from './business-report-dashboard.serv
 })
 export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
 
-  isSystemAdmin = false;
-  SYS_ADMIN = 'SYSADMIN';  
+  isPlatformAdmin = false;
+  PLATFORM_ADMIN = 'PLATFORM-ADMIN';  
   businessId = '';
   
 
@@ -41,7 +41,7 @@ export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
+    this.isPlatformAdmin = this.keycloakService.getUserRoles(true).includes(this.PLATFORM_ADMIN);
   }
 
 

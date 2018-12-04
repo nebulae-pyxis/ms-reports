@@ -26,11 +26,11 @@ class BusinessCQRS {
       "wallet",
       "getWalletBusinesses$()",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN", "business-owner"]
+      ["PLATFORM-ADMIN", "BUSINESS-OWNER"]
     ).pipe(
-      mergeMap(rolResult => rolResult['SYSADMIN']
+      mergeMap(rolResult => rolResult['PLATFORM-ADMIN']
         ? BusinessDA.getAllBusinesses$()
-        : rolResult['business-owner']
+        : rolResult['BUSINESS-OWNER']
           ? BusinessDA.getBusiness$('') 
           : throwError(new CustomError("Query not allowed", "getWalletBusinesses$", 23006, "Roles not enough" ) )
       ),

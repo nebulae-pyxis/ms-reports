@@ -40,9 +40,7 @@
                 "path": "pos-coverage-report",
                 "loadChildren": "./main/content/pos-coverage-report/pos-coverage-report.module#PosCoverageReportModule",
                 "priority": 1000,
-                "roles": [
-                    "SYSADMIN"
-                ],
+                "roles": [ "PLATFORM-ADMIN" ],
                 "default": false
             }
         ],
@@ -98,9 +96,7 @@
                 "path": "business-report-dashboard",
                 "loadChildren": "./main/content/business-report-dashboard/business-report-dashboard.module#BusinessReportDashboardModule",
                 "priority": 2000,
-                "roles": [
-                    "SYSADMIN","BUSINESS-OWNER"
-                ],
+                "roles": ["PLATFORM-ADMIN","BUSINESS-OWNER" ],
                 "default": false
             }
         ],
