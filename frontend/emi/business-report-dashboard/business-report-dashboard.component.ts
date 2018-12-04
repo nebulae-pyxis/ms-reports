@@ -1,6 +1,6 @@
 import { KeycloakService } from 'keycloak-angular';
 import { FuseTranslationLoaderService } from './../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, EventEmitter} from '@angular/core';
 import { fuseAnimations } from '../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
@@ -23,12 +23,13 @@ import { BusinessReportDashboardService } from './business-report-dashboard.serv
 export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
 
   isSystemAdmin = false;
-  SYS_ADMIN = 'SYSADMIN';
-
-
-  productOpstions: string[];
+  SYS_ADMIN = 'SYSADMIN';  
+  businessId = '';
+  
 
   subscriptions: Subscription[] = [];
+  timeSpanSelected: String;
+  subTimeSpanSelected: String;
 
   constructor(
     private businessReportDashboardService: BusinessReportDashboardService,
@@ -46,6 +47,12 @@ export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  ontimeSpanSelected({timeSpanSelected,subTimeSpanSelected}){
+    this.timeSpanSelected = timeSpanSelected;
+    this.subTimeSpanSelected = subTimeSpanSelected;
+    console.log({timeSpanSelected,subTimeSpanSelected});
   }
 
 

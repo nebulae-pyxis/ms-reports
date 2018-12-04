@@ -1,13 +1,13 @@
 <div id="business-report-dashboard" class="page-layout blank grey-100-bg" fusePerfectScrollbar>
 
-  <business-report-dashboard-bonus-line-chart></business-report-dashboard-bonus-line-chart>
+  <business-report-dashboard-bonus-line-chart  (timeSpan$)="ontimeSpanSelected($event)" [businessId]=businessId ></business-report-dashboard-bonus-line-chart>
 
   <div class="content-cards" fxLayout="column">
-    <business-report-dashboard-wallet-status-cards></business-report-dashboard-wallet-status-cards>
-    <business-report-dashboard-sales-overview></business-report-dashboard-sales-overview>
+    <business-report-dashboard-wallet-status-cards [businessId]=businessId [timeSpanSelected]=timeSpanSelected></business-report-dashboard-wallet-status-cards>
+    <business-report-dashboard-sales-overview [businessId]=businessId [timeSpanSelected]=timeSpanSelected [subTimeSpanSelected]=subTimeSpanSelected></business-report-dashboard-sales-overview>
 
-    <business-report-dashboard-net-sales-distribution></business-report-dashboard-net-sales-distribution>
-    <business-report-dashboard-net-bonus-distribution></business-report-dashboard-net-bonus-distribution>
+    <business-report-dashboard-net-sales-distribution [businessId]=businessId [timeSpanSelected]=timeSpanSelected></business-report-dashboard-net-sales-distribution>
+    <business-report-dashboard-net-bonus-distribution [businessId]=businessId [timeSpanSelected]=timeSpanSelected></business-report-dashboard-net-bonus-distribution>
 
   </div>
 

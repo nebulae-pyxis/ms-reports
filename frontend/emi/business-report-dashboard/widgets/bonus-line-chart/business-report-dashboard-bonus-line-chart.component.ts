@@ -1,6 +1,6 @@
 import { KeycloakService } from 'keycloak-angular';
 import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, HostListener, EventEmitter, Input, Output } from '@angular/core';
 import { fuseAnimations } from '../../../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
@@ -22,11 +22,12 @@ import { BusinessReportDashboardBonusLineChartService } from './business-report-
 export class BusinessReportDashboardBonusLineChartComponent implements OnInit, OnDestroy {
 
   timeSpanSelected = '---'
-  subTimeSpanSelected = '---'
+  subTimeSpanSelected = '---'  
+  @Output() timeSpan$ = new EventEmitter<{}>();
+  @Input()  businessId: string;  
+
   chartLabels = [];
-
   bonusLineChartData;
-
   subscriptions: Subscription[] = [];
   timeSpanOptions: string[];
   windowSize: number[];
@@ -53,23 +54,25 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  loadInitialDataset(){
-    const dataset = {
-      '---': {
-        scale : '---',
-        order: 3,
+  loadInitialDataset() {
+    const dataset = [
+      {
+        timeSpan: '---',
+        scale: '---',
+        order: 1,
         labels: ['---', '---', '---', '---', '---', '---', '---'],
         datasets: [
           { order: 1, label: '---', data: [0, 0, 0, 0, 0, 0, 0] },
         ]
-      },      
-    };
+      },
+    ];
     this.updateDataset(dataset);
   }
 
   loadDataset() {
-    of({
-      'YEAR': {
+    of([
+      {
+        timeSpan: 'YEAR',
         order: 3,
         scale: 'THOUSANDS',
         labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
@@ -79,7 +82,8 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
           { order: 1, label: '2017', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
         ]
       },
-      'MONTH': {
+      {
+        timeSpan: 'MONTH',
         order: 2,
         scale: 'THOUSANDS',
         labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -91,7 +95,8 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
           { order: 1, label: 'JUN', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
         ]
       },
-      'WEEK': {
+      {
+        timeSpan: 'WEEK',
         order: 1,
         scale: 'THOUSANDS',
         labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'],
@@ -101,36 +106,38 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
           { order: 3, label: '2 WEEKS AGO', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
         ]
       },
-    }).pipe(
-      delay(1000),      
+    ]).pipe(
+      delay(1000),
     ).subscribe(
       (dataset => this.updateDataset(dataset)),
       (error) => console.error(error),
-      () => {}
+      () => { }
     );
-    
+
   }
 
-  updateDataset(dataset){
+  updateDataset(dataset) {
     this.bonusLineChartData = this.formatDataSet(dataset);
-    //console.log(JSON.stringify(this.bonusLineChartData));
-    this.timeSpanOptions = Object.keys(dataset)
-      .map(k => ({ ...dataset[k], k }))
+    this.timeSpanOptions = dataset
       .sort((o1, o2) => o1.order - o2.order)
-      .map(o => o.k);
-    this.updateTimeSpan(this.timeSpanOptions[0]);    
+      .map(o => o.timeSpan);
+    this.updateTimeSpan(this.timeSpanOptions[0]);
   }
 
 
   updateTimeSpan(timeSpan) {
     this.timeSpanSelected = timeSpan;
     const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;
-    this.updateSubTimeSpan(options[options.length -1]);
+    this.updateSubTimeSpan(options[options.length - 1]);
     this.updateChartLabels();
   }
 
   updateSubTimeSpan(subTimeSpan) {
     this.subTimeSpanSelected = subTimeSpan;
+    this.timeSpan$.emit({
+      timeSpanSelected: this.timeSpanSelected,
+      subTimeSpanSelected: this.subTimeSpanSelected
+    });
   }
 
   updateChartLabels() {
@@ -294,20 +301,23 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
     };
 
-    Object.keys(dataSet).forEach(timeSpan => {
+    dataSet.forEach(data => {
+      const timeSpan = data.timeSpan;
       result.timeSpans[timeSpan] = {
-        labels: dataSet[timeSpan].labels,
+        labels: data.labels,
         datasets: {},
-        scale:dataSet[timeSpan].scale,
+        scale: data.scale,
         datasetOptions: []
       };
-      dataSet[timeSpan].datasets.sort((d1, d2) => d2.order - d1.order);
-      dataSet[timeSpan].datasets.forEach(d => {
+      data.datasets.sort((d1, d2) => d2.order - d1.order);
+      data.datasets.forEach(d => {
         result.timeSpans[timeSpan].datasetOptions.push(d.label);
         result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];
       })
 
     });
+
+    //console.log(JSON.stringify(result));
 
     return result;
   }

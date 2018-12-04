@@ -1,6 +1,6 @@
 import { KeycloakService } from 'keycloak-angular';
 import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, Input } from '@angular/core';
 import { fuseAnimations } from '../../../../../core/animations';
 import { locale as english } from './i18n/en';
 import { locale as spanish } from './i18n/es';
@@ -23,10 +23,9 @@ import { BusinessReportDashboardNetSalesDistributionService } from './business-r
 })
 export class BusinessReportDashboardNetSalesDistributionComponent implements OnInit, OnDestroy {
 
-  isSystemAdmin = false;
-  SYS_ADMIN = 'SYSADMIN';
-
-
+  @Input() businessId;
+  @Input() timeSpanSelected;
+  
   productOpstions: string[];
 
   subscriptions: Subscription[] = [];
@@ -59,7 +58,6 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
   }
 
   ngOnInit() {
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
   }
 
 

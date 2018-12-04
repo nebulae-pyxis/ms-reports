@@ -9,7 +9,7 @@
                         </div>
 
                         <div class="pt-8 pb-32" fxLayout="column" fxLayoutAlign="center center">
-                                <div class="font-size-50 line-height-72" [ngClass]="[data.valueColor]">
+                                <div class="font-size-44 line-height-72" [ngClass]="[data.valueColor]">
                                         {{ data.valueIsCurrency ?  (data.value | currency:'CLP':'$' ) : data.value }}
                                 </div>
                                 <div class="h3 secondary-text font-weight-500">{{data.valueDesc}}
