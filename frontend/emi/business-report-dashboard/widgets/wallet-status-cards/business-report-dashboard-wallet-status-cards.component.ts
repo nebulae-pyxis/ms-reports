@@ -59,32 +59,7 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
   };
 
   loadDataset() {
-    of({
-      spendingAllowed: true,
-      pockets: [
-        {
-          order: 1,
-          name: 'MAIN',
-          balance: 12000000,
-          lastUpdate: Date.now(),
-          currency: 'PESOS',
-        },
-        {
-          order: 2,
-          name: 'BONUS',
-          balance: 120000,
-          lastUpdate: Date.now(),
-          currency: 'PESOS',
-        },
-        {
-          order: 3,
-          name: 'CREDIT',
-          balance: 115000,
-          lastUpdate: Date.now(),
-          currency: 'PESOS',
-        },
-      ]
-    }).pipe(
+    this.businessReportDashboardWalletStatusCardsService.businessReportDashboardWalletStatusCards$(this.businessId).pipe(
       delay(1000)
     ).subscribe(
       (dataset) => this.buildDataset(dataset),

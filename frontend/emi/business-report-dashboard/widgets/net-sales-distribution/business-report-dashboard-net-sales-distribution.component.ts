@@ -71,34 +71,10 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
     this.loadData();
   }
 
+  
   loadData() {
-
-    of((
-      [
-        {
-          timespan: "YEAR", datasets: [
-            { timespan: '2017', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: '2016', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: '2015', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-          ],
-        },
-        {
-          timespan: "MONTH", datasets: [
-            { timespan: 'FEB', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: 'MAR', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: 'JUN', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-          ],
-        },
-        {
-          timespan: "WEEK", datasets: [
-            { timespan: '2 WEEKS AGO', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: 'PAST', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-            { timespan: 'CURRENT', dataset: [{ product: 'Civica', percentage: 50, value: 12000, count: 123 }, { product: 'Tigo', percentage: 50, value: 45000, count: 6543 }] },
-          ],
-        },
-      ]
-    )).pipe(
-      delay(1000),
+    this.businessReportDashboardNetSalesDistributionService.businessReportDashboardNetSalesDistribution$(this.businessId).pipe(
+      map(ds => ds.slice()),
       map(ds => this.formatData(ds))
     ).subscribe(
       (fds) => this.chardData = fds,

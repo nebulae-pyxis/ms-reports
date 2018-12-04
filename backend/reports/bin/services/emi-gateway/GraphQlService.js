@@ -158,7 +158,23 @@ class GraphQlService {
       {
         aggregateType: "Report",
         messageType: "emigateway.graphql.query.businessReportDashboardBonusLineChart"
-      }      
+      },      
+      {
+        aggregateType: "Report",
+        messageType: "emigateway.graphql.query.businessReportDashboardNetBonusDistribution"
+      }, 
+      {
+        aggregateType: "Report",
+        messageType: "emigateway.graphql.query.businessReportDashboardNetSalesDistribution"
+      },     
+      {
+        aggregateType: "Report",
+        messageType: "emigateway.graphql.query.businessReportDashboardSalesOverview"
+      },     
+      {
+        aggregateType: "Report",
+        messageType: "emigateway.graphql.query.businessReportDashboardWalletStatusCards"
+      },     
     ];
   }
 
@@ -176,11 +192,26 @@ class GraphQlService {
         fn: business.cqrs.getBusinesses$,
         obj: business.cqrs
       },
-
       "emigateway.graphql.query.businessReportDashboardBonusLineChart": {
         fn: businessReportDashboardCQRS.queryBusinessReportDashboardBonusLineChartTimeDataset$,
         obj: businessReportDashboardCQRS
-      }
+      },
+      "emigateway.graphql.query.businessReportDashboardNetBonusDistribution": {
+        fn: businessReportDashboardCQRS.queryBusinessReportDashboardNetBonusDistribution$,
+        obj: businessReportDashboardCQRS
+      },
+      "emigateway.graphql.query.businessReportDashboardNetSalesDistribution": {
+        fn: businessReportDashboardCQRS.queryBusinessReportDashboardNetSalesDistribution$,
+        obj: businessReportDashboardCQRS
+      },
+      "emigateway.graphql.query.businessReportDashboardSalesOverview": {
+        fn: businessReportDashboardCQRS.queryBusinessReportDashboardSalesOverview$,
+        obj: businessReportDashboardCQRS
+      },
+      "emigateway.graphql.query.businessReportDashboardWalletStatusCards": {
+        fn: businessReportDashboardCQRS.queryBusinessReportDashboardWalletStatusCards$,
+        obj: businessReportDashboardCQRS
+      },
     };
   }
 }

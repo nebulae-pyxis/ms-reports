@@ -70,11 +70,9 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   }
 
   loadDataset() {
-
-
     this.businessReportDashboardBonusLineChartService.businessReportDashboardBonusLineChart$(this.businessId).pipe(
     ).subscribe(
-      (dataset => this.updateDataset(dataset)),
+      (dataset => this.updateDataset(dataset.slice())),
       (error) => console.error(error),
       () => { }
     );
@@ -82,10 +80,10 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   }
 
   updateDataset(dataset) {
-    this.bonusLineChartData = this.formatDataSet(dataset);
+    this.bonusLineChartData = this.formatDataSet(dataset);        
     this.timeSpanOptions = dataset
       .sort((o1, o2) => o1.order - o2.order)
-      .map(o => o.timespan);
+      .map(o => o.timespan);      
     this.updateTimeSpan(this.timeSpanOptions[0]);
   }
 
@@ -273,18 +271,15 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
         datasets: {},
         scale: data.scale,
         datasetOptions: []
-      };
-      data.datasets.sort((d1, d2) => d2.order - d1.order);
-      data.datasets.forEach(d => {
+      };      
+      const datasets = data.datasets.slice();
+      datasets.sort((d1, d2) => d2.order - d1.order);
+      datasets.forEach(d => {        
         result.timeSpans[timeSpan].datasetOptions.push(d.label);
-        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];
-        console.log(`##########timeSpan:${timeSpan},  ${JSON.stringify(d)}###############`);
+        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];        
       })
 
     });
-
-    console.log(JSON.stringify(result));
-
     return result;
   }
 

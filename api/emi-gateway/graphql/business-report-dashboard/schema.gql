@@ -16,8 +16,83 @@ type BusinessReportDashboardBonusLineChartSubtimeDataset{
   data: [Float]
 }
 
+type BusinessReportDashboardNetBonusDistributionTimeDataSet{
+    timespan: String,    
+    datasets: [BusinessReportDashboardNetBonusDistributionSubtime]
+}
+
+type BusinessReportDashboardNetBonusDistributionSubtime{
+  timespan: String,    
+  dataset: [BusinessReportDashboardNetBonusDistributionSubtimeDataset]
+}
+
+type BusinessReportDashboardNetBonusDistributionSubtimeDataset{
+   product: String, 
+   percentage: Float, 
+   value: BigInt, 
+   count: Int
+}
+
+
+type BusinessReportDashboardNetSalesDistributionTimeDataSet{
+    timespan: String,    
+    datasets: [BusinessReportDashboardNetSalesDistributionSubtime]
+}
+
+type BusinessReportDashboardNetSalesDistributionSubtime{
+  timespan: String,    
+  dataset: [BusinessReportDashboardNetSalesDistributionSubtimeDataset]
+}
+
+type BusinessReportDashboardNetSalesDistributionSubtimeDataset{
+   product: String, 
+   percentage: Float, 
+   value: BigInt, 
+   count: Int
+}
+
+type BusinessReportDashboardSalesOverviewTimeDataSet{
+    timespan: String,  
+    datasets: [BusinessReportDashboardNetSalesDistributionSubtime]  
+}
+
+type BusinessReportDashboardNetSalesDistributionSubtime{
+  timespan: String,  
+  scale: String,
+  labels: [String],
+  datasets: BusinessReportDashboardNetSalesDistributionSubtimeDatasets
+}
+
+type BusinessReportDashboardNetSalesDistributionSubtimeDatasets{
+  mainSales: [BigInt],
+  bonusSales: [BigInt],
+  creditSales: [BigInt],
+  mainBalance: [BigInt],
+  bonusBalance: [BigInt],
+  salesQty: [BigInt],
+  bonusQty: [BigInt],
+}
+
+type BusinessReportDashboardWalletStatusCards{
+  spendingAllowed: Boolean,
+  pockets: [BusinessReportDashboardWalletStatusCardsPocket]
+}
+
+type BusinessReportDashboardWalletStatusCardsPocket{
+  order: Int,
+  name: String,
+  balance: BigInt,
+  lastUpdate:BigInt,
+  currency: String,
+}
+
 
 type Query{
-  businessReportDashboardBonusLineChart(businessId: String): [BusinessReportDashboardBonusLineChartTimeDataset]  @requireAuth
+  businessReportDashboardBonusLineChart(businessId: String): [BusinessReportDashboardBonusLineChartTimeDataset] @requireAuth
+  businessReportDashboardNetBonusDistribution(businessId: String): [BusinessReportDashboardNetBonusDistributionTimeDataSet] @requireAuth
+  businessReportDashboardNetSalesDistribution(businessId: String): [BusinessReportDashboardNetSalesDistributionTimeDataSet] @requireAuth
+  businessReportDashboardSalesOverview(businessId: String): [BusinessReportDashboardSalesOverviewTimeDataSet] @requireAuth
+  businessReportDashboardWalletStatusCards(businessId: String): BusinessReportDashboardWalletStatusCards @requireAuth
+
 }
 
