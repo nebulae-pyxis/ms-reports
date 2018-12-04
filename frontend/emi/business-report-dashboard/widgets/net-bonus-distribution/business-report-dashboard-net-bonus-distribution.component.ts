@@ -28,7 +28,7 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
   @Input() subTimeSpanSelected;
 
 
-  initialData = {
+  initialData: any = {
     'title': 'BONUS_DISTRIBUTION',
     '---': {
       '---': {
@@ -40,10 +40,10 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
   };
 
   subscriptions: Subscription[] = []
-  chardData = undefined;
+  chardData: any = undefined;
 
 
-  chartConfigs = {
+  chartConfigs: any = {
     legend: false,
     explodeSlices: false,
     labels: true,

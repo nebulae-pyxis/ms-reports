@@ -73,8 +73,6 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
 
     this.businessReportDashboardBonusLineChartService.businessReportDashboardBonusLineChart$(this.businessId).pipe(
-      tap(x => console.log(`##########${JSON.stringify(x)}###############`)),
-      delay(1000),
     ).subscribe(
       (dataset => this.updateDataset(dataset)),
       (error) => console.error(error),
@@ -268,7 +266,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
     };
 
-    dataSet.forEach(data => {
+    dataSet.forEach(data => {      
       const timeSpan = data.timespan;
       result.timeSpans[timeSpan] = {
         labels: data.labels,
@@ -280,6 +278,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       data.datasets.forEach(d => {
         result.timeSpans[timeSpan].datasetOptions.push(d.label);
         result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];
+        console.log(`##########timeSpan:${timeSpan},  ${JSON.stringify(d)}###############`);
       })
 
     });
