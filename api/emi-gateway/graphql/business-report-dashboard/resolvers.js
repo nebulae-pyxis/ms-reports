@@ -27,35 +27,35 @@ module.exports = {
     //// QUERY ///////
     Query: {
         businessReportDashboardBonusLineChart(root, args, context) {
-            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardBonusLineChart', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER'])                
+            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardBonusLineChart', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER','PLATFORM-ADMIN'])                
                 .switchMapTo(
                     broker.forwardAndGetReply$("Report", "emigateway.graphql.query.businessReportDashboardBonusLineChart", { root, args, jwt: context.encodedToken }, 500)
                         .mergeMap(response => getResponseFromBackEnd$(response))
                 ).toPromise();
         },
         businessReportDashboardNetBonusDistribution(root, args, context) {
-            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardNetBonusDistribution', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER'])                
+            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardNetBonusDistribution', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER','PLATFORM-ADMIN'])                
                 .switchMapTo(
                     broker.forwardAndGetReply$("Report", "emigateway.graphql.query.businessReportDashboardNetBonusDistribution", { root, args, jwt: context.encodedToken }, 500)
                         .mergeMap(response => getResponseFromBackEnd$(response))
                 ).toPromise();
         },
         businessReportDashboardNetSalesDistribution(root, args, context) {
-            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardNetSalesDistribution', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER'])                
+            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardNetSalesDistribution', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER','PLATFORM-ADMIN'])                
                 .switchMapTo(
                     broker.forwardAndGetReply$("Report", "emigateway.graphql.query.businessReportDashboardNetSalesDistribution", { root, args, jwt: context.encodedToken }, 500)
                         .mergeMap(response => getResponseFromBackEnd$(response))
                 ).toPromise();
         },
         businessReportDashboardSalesOverview(root, args, context) {
-            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardSalesOverview', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER'])                
+            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardSalesOverview', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER','PLATFORM-ADMIN'])                
                 .switchMapTo(
                     broker.forwardAndGetReply$("Report", "emigateway.graphql.query.businessReportDashboardSalesOverview", { root, args, jwt: context.encodedToken }, 500)
                         .mergeMap(response => getResponseFromBackEnd$(response))
                 ).toPromise();
         },
         businessReportDashboardWalletStatusCards(root, args, context) {
-            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardWalletStatusCards', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER'])                
+            return RoleValidator.checkPermissions$(context.authToken.realm_access.roles, 'business-report-dashboard', 'businessReportDashboardWalletStatusCards', USERS_PERMISSION_DENIED_ERROR_CODE, 'Permission denied', ['BUSINESS-OWNER','PLATFORM-ADMIN'])                
                 .switchMapTo(
                     broker.forwardAndGetReply$("Report", "emigateway.graphql.query.businessReportDashboardWalletStatusCards", { root, args, jwt: context.encodedToken }, 500)
                         .mergeMap(response => getResponseFromBackEnd$(response))
