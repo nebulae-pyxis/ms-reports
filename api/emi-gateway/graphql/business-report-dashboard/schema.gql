@@ -1,0 +1,23 @@
+
+
+
+
+type BusinessReportDashboardBonusLineChartTimeDataset{
+  timespan: String,
+  scale: String,
+  order: Int,
+  labels: [String],
+  datasets: [BusinessReportDashboardBonusLineChartSubtimeDataset]
+}
+
+type BusinessReportDashboardBonusLineChartSubtimeDataset{
+  order: Int,
+  label: String,
+  data: [Float]
+}
+
+
+type Query{
+  businessReportDashboardBonusLineChart(businessId: String): [BusinessReportDashboardBonusLineChartTimeDataset]  @requireAuth
+}
+

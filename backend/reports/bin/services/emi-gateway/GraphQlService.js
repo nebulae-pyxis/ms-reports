@@ -1,6 +1,7 @@
 "use strict";
 
 const reports = require("../../domain/pos-coverage-report");
+const {businessReportDashboardCQRS} = require('../../domain/business-report-dashboard/')
 const business = require("../../domain/business");
 const broker = require("../../tools/broker/BrokerFactory")();
 const Rx = require("rxjs");
@@ -152,7 +153,12 @@ class GraphQlService {
       {
         aggregateType: "Report",
         messageType: "emigateway.graphql.query.getReportsBusinesses"
-      }
+      },
+
+      {
+        aggregateType: "Report",
+        messageType: "emigateway.graphql.query.businessReportDashboardBonusLineChart"
+      }      
     ];
   }
 
@@ -169,6 +175,11 @@ class GraphQlService {
       "emigateway.graphql.query.getReportsBusinesses": {
         fn: business.cqrs.getBusinesses$,
         obj: business.cqrs
+      },
+
+      "emigateway.graphql.query.businessReportDashboardBonusLineChart": {
+        fn: businessReportDashboardCQRS.queryBusinessReportDashboardBonusLineChartTimeDataset$,
+        obj: businessReportDashboardCQRS
       }
     };
   }

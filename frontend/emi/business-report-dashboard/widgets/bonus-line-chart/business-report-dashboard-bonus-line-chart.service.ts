@@ -3,7 +3,7 @@ import { Observable } from 'rxjs/Observable';
 import * as Rx from 'rxjs';
 import { GatewayService } from '../../../../../api/gateway.service';
 import {
-  
+  businessReportDashboardBonusLineChart
 } from './gql/business-report-dashboard-bonus-line-chart';
 import { of } from 'rxjs';
 
@@ -11,6 +11,15 @@ import { of } from 'rxjs';
 export class BusinessReportDashboardBonusLineChartService {
 
   constructor(private gateway: GatewayService) {
+  }
+
+  businessReportDashboardBonusLineChart$(businessId) {
+    return this.gateway.apollo
+      .query<any>({
+        query: businessReportDashboardBonusLineChart,
+        fetchPolicy: 'network-only'
+      })
+      .map(resp => resp.data.businessReportDashboardBonusLineChart);
   }
 
 }

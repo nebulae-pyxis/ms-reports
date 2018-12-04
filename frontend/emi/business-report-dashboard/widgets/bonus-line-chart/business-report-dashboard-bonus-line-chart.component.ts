@@ -57,7 +57,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   loadInitialDataset() {
     const dataset = [
       {
-        timeSpan: '---',
+        timespan: '---',
         scale: '---',
         order: 1,
         labels: ['---', '---', '---', '---', '---', '---', '---'],
@@ -70,43 +70,10 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   }
 
   loadDataset() {
-    of([
-      {
-        timeSpan: 'YEAR',
-        order: 3,
-        scale: 'THOUSANDS',
-        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
-        datasets: [
-          { order: 3, label: '2015', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
-          { order: 2, label: '2016', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
-          { order: 1, label: '2017', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
-        ]
-      },
-      {
-        timeSpan: 'MONTH',
-        order: 2,
-        scale: 'THOUSANDS',
-        labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9',
-          '10', '11', '12', '13', '14', '15', '16', '17', '18', '19',
-          '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'],
-        datasets: [
-          { order: 3, label: 'FEB', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9, 1.9, 3.2, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
-          { order: 2, label: 'MAR', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8, 2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
-          { order: 1, label: 'JUN', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
-        ]
-      },
-      {
-        timeSpan: 'WEEK',
-        order: 1,
-        scale: 'THOUSANDS',
-        labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'],
-        datasets: [
-          { order: 1, label: 'CURRENT', data: [1.9, 3, 3.4, 2.2, 2.9, 3.9, 2.5, 3.8, 4.1, 3.8, 3.2, 2.9] },
-          { order: 2, label: 'PAST', data: [2.2, 2.9, 3.9, 2.5, 3.8, 3.2, 2.9, 1.9, 3, 3.4, 4.1, 3.8] },
-          { order: 3, label: '2 WEEKS AGO', data: [3.9, 2.5, 3.8, 4.1, 1.9, 3, 3.8, 3.2, 2.9, 3.4, 2.2, 2.9] },
-        ]
-      },
-    ]).pipe(
+
+
+    this.businessReportDashboardBonusLineChartService.businessReportDashboardBonusLineChart$(this.businessId).pipe(
+      tap(x => console.log(`##########${JSON.stringify(x)}###############`)),
       delay(1000),
     ).subscribe(
       (dataset => this.updateDataset(dataset)),
@@ -120,7 +87,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.bonusLineChartData = this.formatDataSet(dataset);
     this.timeSpanOptions = dataset
       .sort((o1, o2) => o1.order - o2.order)
-      .map(o => o.timeSpan);
+      .map(o => o.timespan);
     this.updateTimeSpan(this.timeSpanOptions[0]);
   }
 
@@ -302,7 +269,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     };
 
     dataSet.forEach(data => {
-      const timeSpan = data.timeSpan;
+      const timeSpan = data.timespan;
       result.timeSpans[timeSpan] = {
         labels: data.labels,
         datasets: {},
@@ -317,7 +284,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
     });
 
-    //console.log(JSON.stringify(result));
+    console.log(JSON.stringify(result));
 
     return result;
   }

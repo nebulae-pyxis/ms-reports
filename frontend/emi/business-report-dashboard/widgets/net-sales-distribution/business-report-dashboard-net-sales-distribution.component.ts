@@ -28,7 +28,7 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
   @Input() subTimeSpanSelected;
 
 
-  initialData = {
+  initialData: any = {
     'title': 'SALES_DISTRIBUTION',
     '---': {
       '---': {
@@ -43,7 +43,7 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
   chardData = undefined;
 
 
-  chartConfigs = {
+  chartConfigs: any = {
     legend: false,
     explodeSlices: false,
     labels: true,
