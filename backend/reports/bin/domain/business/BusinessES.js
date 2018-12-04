@@ -21,6 +21,7 @@ class BusinessES {
     )
   }
 
+  
   /**
    * updates the business general info on the materialized view according to the received data from the event store.
    * @param {*} evt business general info updated event

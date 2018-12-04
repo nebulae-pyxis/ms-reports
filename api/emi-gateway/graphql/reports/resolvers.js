@@ -26,6 +26,7 @@ module.exports = {
     
 
     Query: {        
+        
         ReportBusinesses(root, args, context) {
             return broker
                 .forwardAndGetReply$(
