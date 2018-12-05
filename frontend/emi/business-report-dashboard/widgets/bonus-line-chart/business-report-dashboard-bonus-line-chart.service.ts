@@ -17,7 +17,10 @@ export class BusinessReportDashboardBonusLineChartService {
     return this.gateway.apollo
       .query<any>({
         query: businessReportDashboardBonusLineChart,
-        fetchPolicy: 'network-only'
+        fetchPolicy: 'network-only',
+        variables: {
+          businessId
+        },
       })
       .map(resp => resp.data.businessReportDashboardBonusLineChart);
   }
