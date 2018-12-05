@@ -157,6 +157,10 @@ class EventStoreService {
         fn: business.eventSourcing.handleWalletSpendingAllowedEvent$,
         obj: business.eventSourcing
       },
+      WalletUpdated: {
+        fn: business.eventSourcing.handleWalletUpdatedEvent$,
+        obj: business.eventSourcing
+      },
     };
   }
 
@@ -196,6 +200,10 @@ class EventStoreService {
       {
         aggregateType: "Wallet",
         eventType: "WalletSpendingAllowed"
+      },
+      {
+        aggregateType: "Wallet",
+        eventType: "WalletUpdated"
       },
     ]
   }

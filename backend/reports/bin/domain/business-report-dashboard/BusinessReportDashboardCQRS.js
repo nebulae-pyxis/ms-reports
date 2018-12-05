@@ -78,7 +78,7 @@ class BusinessReportDashboardCQRS {
             ),
 
         ).pipe(
-            //tap(x => console.log(JSON.stringify(x))),
+            tap(x => console.log(`queryBusinessReportDashboardBonusLineChartTimeDataset: ${JSON.stringify(x)}\n`)),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -127,6 +127,7 @@ class BusinessReportDashboardCQRS {
                 )
                 )),
         ).pipe(
+            tap(x => console.log(`queryBusinessReportDashboardNetBonusDistribution: ${JSON.stringify(x)}\n`)),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -176,7 +177,8 @@ class BusinessReportDashboardCQRS {
                     map(datasets => ({ timespan: 'WEEK', datasets }))
                 )
                 )),
-        ).pipe(            
+        ).pipe(       
+            tap(x => console.log(`queryBusinessReportDashboardNetSalesDistribution: ${JSON.stringify(x)}\n`)),     
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -217,6 +219,7 @@ class BusinessReportDashboardCQRS {
                 },
             ]
         ).pipe(
+            tap(x => console.log(`queryBusinessReportDashboardSalesOverview: ${JSON.stringify(x)}\n`)),     
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -264,7 +267,7 @@ class BusinessReportDashboardCQRS {
             }),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
-                tap(x => console.log(JSON.stringify(x))),
+                tap(x => console.log(`queryBusinessReportDashboardWalletStatusCards: ${JSON.stringify(x)}\n`)),     
                 this.logError(error);
                 return GraphqlResponseTools.handleError$(error);
             })

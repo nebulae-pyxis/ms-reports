@@ -16,12 +16,12 @@ class BusinessES {
   handleBusinessCreated$(businessCreatedEvent) {
     console.log("Se ha creado una unidad de negocio", JSON.stringify(businessCreatedEvent));
     return of(businessCreatedEvent)
-    .pipe(
-      mergeMap( business => BusinessDA.persistBusiness$(business.data) )
-    )
+      .pipe(
+        mergeMap(business => BusinessDA.persistBusiness$(business.data))
+      )
   }
 
-  
+
   /**
    * updates the business general info on the materialized view according to the received data from the event store.
    * @param {*} evt business general info updated event
@@ -29,8 +29,8 @@ class BusinessES {
   handleBusinessGeneralInfoUpdated$(evt) {
     return of(evt.data)
       .pipe(
-        mergeMap(businessUpdated => BusinessDA.updateBusinessGeneralInfo$( evt.aid, businessUpdated )
-      ));
+        mergeMap(businessUpdated => BusinessDA.updateBusinessGeneralInfo$(evt.aid, businessUpdated)
+        ));
   }
 
   /**
@@ -38,7 +38,7 @@ class BusinessES {
    * @param {Event} event 
    */
   handleBusinessActivatedEvent$(event) {
-      return BusinessDA.updateBusinessActive$(event.aid,true);
+    return BusinessDA.updateBusinessActive$(event.aid, true);
   }
 
   /**
@@ -46,7 +46,7 @@ class BusinessES {
    * @param {Event} event 
    */
   handleBusinessDeactivatedEvent$(event) {
-      return BusinessDA.updateBusinessActive$(event.aid,false);
+    return BusinessDA.updateBusinessActive$(event.aid, false);
   }
 
   /**
@@ -54,8 +54,8 @@ class BusinessES {
    * @param {Event} event 
    */
   handleWalletSpendingForbiddenEvent$(event) {
-      const data = event.data;
-      return BusinessDA.updateBusinessWallet$(data.businessId, data.wallet, false);
+    const data = event.data;
+    return BusinessDA.updateBusinessWallet$(data.businessId, data.wallet, false);
   }
 
   /**
@@ -63,8 +63,17 @@ class BusinessES {
    * @param {Event} event 
    */
   handleWalletSpendingAllowedEvent$(event) {
-      const data = event.data;
-      return BusinessDA.updateBusinessWallet$(data.businessId, data.wallet, true);
+    const data = event.data;
+    return BusinessDA.updateBusinessWallet$(data.businessId, data.wallet, true);
+  }
+
+  /**
+   * updates business state
+   * @param {Event} event 
+   */
+  handleWalletUpdatedEvent$(event) {
+    const data = event.data;
+    return BusinessDA.updateBusinessWallet$(data.businessId, { bonus: data.pockets.bonus, main: data.pockets.main }, data.spendingState === 'ALLOWED');
   }
 
   /**
