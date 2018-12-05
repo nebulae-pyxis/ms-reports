@@ -93,7 +93,7 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
   }
 
   ngOnInit() {
-    this.loadDataset();
+    setTimeout(() => this.loadDataset() , 500);
   }
 
   loadDataset() {

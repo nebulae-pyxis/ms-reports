@@ -40,7 +40,7 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
 
   ngOnInit() {
     this.loadInitialData();
-    this.loadDataset();
+    setTimeout(() => this.loadDataset() , 500);
   }
 
 
@@ -80,8 +80,8 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
         lastUpdate: p.lastUpdate
       }));
     dataset.push({
-      title: 'Spending Allowed',
-      value: 'YES',
+      title: 'Ventas permitidas',
+      value: walletStatus.spendingAllowed ? 'SI' : 'NO',
       valueDesc: '',
       lastUpdate: Date.now(),
       valueColor: 'green-fg',

@@ -68,7 +68,7 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
   }
 
   ngOnInit() {
-    this.loadData();
+    setTimeout(() => this.loadData() , 500);
   }
 
   loadData() {
@@ -88,14 +88,14 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
       form[obj.timespan] = obj.datasets.reduce((dataset, ds) => {
         dataset[ds.timespan] = {
           'mainChart': ds.dataset.map(d => ({ name: d.product, value: d.percentage })),
-          'footerLeft': { 'title': 'Bonus', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
-          'footerRight': { 'title': 'Count', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
+          'footerLeft': { 'title': 'Comisiones', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
+          'footerRight': { 'title': 'Cantidad', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
         }
         return dataset;
       }, {});
       return form;
     }, {});
-    formated.title = 'BONUS_DISTRIBUTION';
+    formated.title = 'Distribución de Comisiones';
     
     return formated;
   }

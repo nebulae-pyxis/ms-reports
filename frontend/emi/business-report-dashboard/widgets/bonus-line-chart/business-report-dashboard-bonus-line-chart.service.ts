@@ -1,3 +1,4 @@
+import gql from "graphql-tag";
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import * as Rx from 'rxjs';
@@ -16,8 +17,14 @@ export class BusinessReportDashboardBonusLineChartService {
   businessReportDashboardBonusLineChart$(businessId) {
     return this.gateway.apollo
       .query<any>({
-        query: businessReportDashboardBonusLineChart,
-        fetchPolicy: 'network-only'
+        query: gql`
+                query{
+                    businessReportDashboardBonusLineChart(  businessId: "${businessId}"){
+                            timespan,scale,order,labels,datasets{order,label,data}
+                }
+            }
+        `,
+        fetchPolicy: 'network-only',
       })
       .map(resp => resp.data.businessReportDashboardBonusLineChart);
   }
