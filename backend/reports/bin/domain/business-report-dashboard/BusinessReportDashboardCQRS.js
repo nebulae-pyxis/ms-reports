@@ -236,7 +236,7 @@ class BusinessReportDashboardCQRS {
             map(business => {
                 const mainBalance = !business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.main ? business.wallet.pockets.main : business.wallet.pockets.balance;
                 return {
-                    spendingAllowed: business.wallet.spendingAllowed,
+                    spendingAllowed: !business.wallet ? false : business.wallet.spendingAllowed,
                     pockets: [
                         {
                             order: 1,
