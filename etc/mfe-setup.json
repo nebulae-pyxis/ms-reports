@@ -40,7 +40,7 @@
                 "path": "pos-coverage-report",
                 "loadChildren": "./main/content/pos-coverage-report/pos-coverage-report.module#PosCoverageReportModule",
                 "priority": 1000,
-                "roles": [ "PLATFORM-ADMIN" ],
+                "roles": [ "PLATFORM-ADMIN", "BUSINESS-OWNER" ],
                 "default": false
             }
         ],
