@@ -8,6 +8,7 @@ query  ReportPosItems($businessId: String, $product: String, $posId: String   ){
     _id
     lastUpdate
     businessId
+    businessName
     products
     pos {
       userName

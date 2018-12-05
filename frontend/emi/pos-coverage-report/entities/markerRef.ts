@@ -8,6 +8,7 @@ export class PosPoint {
   _id: string;
   lastUpdate: number;
   businessId: string;
+  businessName: string;
   products: string[];
   pos: { userName: string, userId: string, terminal: any };
   location: { type: string, coordinates: { lat: number, long: number } };
@@ -15,12 +16,14 @@ export class PosPoint {
     _id: string,
     lastUpdate: number,
     businessId: string,
+    businessName: string,
     products: string[],
     pos: { userName: string, userId: string, terminal: any },
     location: { type: string, coordinates: { lat: number, long: number } }){
       this._id = _id;
       this.lastUpdate = lastUpdate;
       this.businessId =  businessId;
+      this.businessName = businessName;
       this.products = products;
       this.pos = pos;
       this.location = location;
@@ -294,7 +297,8 @@ export const MarkerRefOriginalInfoWindowContent =
         <div id="deviceInfoWindow">
         <h2>$$POS_DETAILS$$</h2>
         <p> <strong>$$POS_ID$$: </strong>{POS_ID}</p>
-        <p> <strong>$$BUSISNESS_ID$$: </strong>{BUSISNESS_ID}</p>
+        <!-- <p> <strong>$$BUSINESS_ID$$: </strong>{BUSINESS_ID}</p> -->
+        <p> <strong>$$BUSINESS_NAME$$: </strong>{BUSINESS_NAME}</p>
         <p> <strong>$$USER_NAME$$: </strong>{USER_NAME}</p>
         <p> <strong>$$LAST_UPDATE$$: </strong>{LAST_UPDATE}</p>
       </div>

@@ -23,6 +23,7 @@ type ReportPos {
   _id: String
   lastUpdate: BigInt
   businessId: String
+  businessName: String
   products: [String]
   pos: ReportPosInfo
   location: ReportLocation

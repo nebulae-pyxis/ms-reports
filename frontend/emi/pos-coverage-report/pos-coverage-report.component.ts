@@ -125,7 +125,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
     return from(posList)
     .pipe(
       map((p) => new MarkerRef(
-        new PosPoint(p._id, p.lastUpdate, p.businessId, p.products,  p.pos, p.location ),
+        new PosPoint(p._id, p.lastUpdate, p.businessId, p.businessName, p.products,  p.pos, p.location ),
         {
           position: {
             lat: parseFloat(p.location.coordinates.lat),
@@ -309,11 +309,13 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
           infoWindowContent: MarkerRefOriginalInfoWindowContent
             .replace('$$POS_DETAILS$$', translations.POS_DETAILS)
             .replace('$$POS_ID$$', translations.POS_ID)
-            .replace('$$BUSISNESS_ID$$', translations.BUSISNESS_ID)
+            // .replace('$$BUSINESS_ID$$', translations.BUSISNESS_ID)
+            .replace('$$BUSINESS_NAME$$', translations.BUSINESS_NAME)
             .replace('$$USER_NAME$$', translations.USER_NAME)
             .replace('$$LAST_UPDATE$$', translations.LAST_UPDATE)
             .replace('{POS_ID}', marker.posPoint._id)
-            .replace('{BUSISNESS_ID}', marker.posPoint.businessId)
+            // .replace('{BUSINESS_ID}', marker.posPoint.businessId)
+            .replace('{BUSINESS_NAME}', marker.posPoint.businessName)
             .replace('{USER_NAME}', marker.posPoint.pos.userName)
             .replace('{LAST_UPDATE}', this.datePipe.transform(new Date(marker.posPoint.lastUpdate), 'dd-MM-yyyy HH:mm'))
         })),
