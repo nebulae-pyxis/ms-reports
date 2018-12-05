@@ -3,7 +3,7 @@
 let mongoDB = undefined;
 const CollectionName = "Business";
 const { Observable, defer, of } = require('rxjs');
-const { map, mergeMap } = require('rxjs/operators');
+const { map, mergeMap ,tap} = require('rxjs/operators');
 const { CustomError } = require("../tools/customError");
 
 class BusinessDA {
@@ -58,7 +58,7 @@ class BusinessDA {
     const collection = mongoDB.db.collection(CollectionName);   
     return of(business)
     .pipe(
-      map(bu => ({ _id: bu._id, name: bu.generalInfo.name, products: [] })),
+      map(bu => ({ _id: bu._id, lastUpdate : Date.now(), name: bu.generalInfo.name, products: [] })),
       mergeMap(bu => defer(() => collection.insertOne(bu)))      
     )
   }
@@ -105,6 +105,56 @@ class BusinessDA {
     }
     return undefined;
   }
+
+
+  /**
+   * updates business active flag
+   * @param {String} businessId 
+   * @param {boolean} active 
+   */
+  static updateBusinessActive$(businessId, active) {
+    const collection = mongoDB.db.collection(CollectionName);
+    const updateQuery = [
+      { '_id': businessId },
+      {
+        '$set': {
+          'active':active,
+          'lastUpdate' : Date.now()
+        }
+      },
+      { 'multi': false, upsert: true }
+    ];
+
+    return defer(() => collection.update(...updateQuery)).pipe(
+      tap(x => { if (x.result.ok !== 1) throw (new Error(`Business(id:${id}) updated failed`)); }),
+    );
+  }
+
+  /**
+   * updates business wallet status
+   * @param {String} businessId 
+   * @param {{main,bonus}} pockets wallet pockets
+   * @param {boolean} spendingAllowed wallet spending allowed flag
+   */
+  static updateBusinessWallet$(businessId, pockets, spendingAllowed) {
+    const collection = mongoDB.db.collection(CollectionName);
+    const updateQuery = [
+      { '_id': businessId },
+      {
+        '$set': {
+          'wallet':{pockets,spendingAllowed},
+          'lastUpdate' : Date.now()
+        }
+      },
+      { 'multi': false, upsert: true }
+    ];
+
+    return defer(() => collection.update(...updateQuery)).pipe(
+      tap(x => { if (x.result.ok !== 1) throw (new Error(`Business(id:${id}) updated failed`)); }),
+    );
+  }
+
+
 }
 
 /**

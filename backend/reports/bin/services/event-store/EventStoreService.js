@@ -3,6 +3,7 @@ const Rx = require("rxjs");
 const eventSourcing = require("../../tools/EventSourcing")();
 const reports = require('../../domain/pos-coverage-report');
 const business= require('../../domain/business');
+const {businessReportDashboardES} = require('../../domain/business-report-dashboard/')
 const { map, switchMap, filter, mergeMap, concatMap } = require('rxjs/operators');
 /**
  * Singleton instance
@@ -135,7 +136,27 @@ class EventStoreService {
       BusinessGeneralInfoUpdated: {
         fn: business.eventSourcing.handleBusinessGeneralInfoUpdated$,
         obj: business.eventSourcing
-      }
+      },
+      WalletTransactionExecuted: {
+        fn: businessReportDashboardES.handleWalletTransactionExecutedEvt$,
+        obj: businessReportDashboardES
+      },
+      BusinessActivated: {
+        fn: business.eventSourcing.handleBusinessActivatedEvent$,
+        obj: business.eventSourcing
+      },
+      BusinessDeactivated: {
+        fn: business.eventSourcing.handleBusinessDeactivatedEvent$,
+        obj: business.eventSourcing
+      },
+      WalletSpendingForbidden: {
+        fn: business.eventSourcing.handleWalletSpendingForbiddenEvent$,
+        obj: business.eventSourcing
+      },
+      WalletSpendingAllowed: {
+        fn: business.eventSourcing.handleWalletSpendingAllowedEvent$,
+        obj: business.eventSourcing
+      },
     };
   }
 
@@ -155,7 +176,27 @@ class EventStoreService {
       {
         aggregateType: "Business",
         eventType: "BusinessGeneralInfoUpdated"
-      }
+      },
+      {
+        aggregateType: "Wallet",
+        eventType: "WalletTransactionExecuted"
+      },
+      {
+        aggregateType: "Business",
+        eventType: "BusinessActivated"
+      },
+      {
+        aggregateType: "Business",
+        eventType: "BusinessDeactivated"
+      },
+      {
+        aggregateType: "Wallet",
+        eventType: "WalletSpendingForbidden"
+      },
+      {
+        aggregateType: "Wallet",
+        eventType: "WalletSpendingAllowed"
+      },
     ]
   }
 }

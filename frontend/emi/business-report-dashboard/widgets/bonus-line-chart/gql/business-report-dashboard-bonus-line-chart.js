@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 
 export const businessReportDashboardBonusLineChart = gql`
     query{
-        businessReportDashboardBonusLineChart(businessId: "BUSINESS_ID"){
+        businessReportDashboardBonusLineChart(businessId: "c81860b2-5da0-4c03-8774-445f244bc8d4"){
             timespan,scale,order,labels,datasets{order,label,data}
         }
     }

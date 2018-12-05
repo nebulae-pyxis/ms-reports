@@ -4,7 +4,7 @@ import gql from "graphql-tag";
 
 export const businessReportDashboardNetBonusDistribution = gql`
     query{
-        businessReportDashboardNetBonusDistribution(businessId:""){
+        businessReportDashboardNetBonusDistribution(businessId:"c81860b2-5da0-4c03-8774-445f244bc8d4"){
             timespan,
             datasets{
             timespan,

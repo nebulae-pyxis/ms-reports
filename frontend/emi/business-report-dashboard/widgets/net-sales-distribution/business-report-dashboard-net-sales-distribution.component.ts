@@ -71,7 +71,7 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
     this.loadData();
   }
 
-  
+
   loadData() {
     this.businessReportDashboardNetSalesDistributionService.businessReportDashboardNetSalesDistribution$(this.businessId).pipe(
       map(ds => ds.slice()),
@@ -88,14 +88,21 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
       form[obj.timespan] = obj.datasets.reduce((dataset, ds) => {
         dataset[ds.timespan] = {
           'mainChart': ds.dataset.map(d => ({ name: d.product, value: d.percentage })),
-          'footerLeft': { 'title': 'Sales', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
-          'footerRight': { 'title': 'Count', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
+          'footerLeft': { 'title': 'Ventas', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
+          'footerRight': { 'title': 'Cantidad', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
         }
         return dataset;
       }, {});
       return form;
     }, {});
-    formated.title = 'SALES_DISTRIBUTION';
+    formated.title = 'Distribución de ventas';
+    formated['---'] = {
+      '---': {
+        'mainChart': [{ name: '...', value: 100 }],
+        'footerLeft': { 'title': 'Ventas', 'count': 0 },
+        'footerRight': { 'title': 'Cantidad', 'count': 0 },
+      }
+    };
     return formated;
   }
 
