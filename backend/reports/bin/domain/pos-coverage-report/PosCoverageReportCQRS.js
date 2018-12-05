@@ -1,8 +1,9 @@
 const { mergeMap, catchError, map, toArray, tap } = require("rxjs/operators");
-const { of, from } = require("rxjs");
+const { of, from, forkJoin } = require("rxjs");
 const broker = require("../../tools/broker/BrokerFactory")();
 const { CustomError, DefaultError } = require("../../tools/customError");
 const PosDA = require('../../data/PosDA');
+const BusinessDA = require("../../data/BusinessDA");
 const { handleError$, buildSuccessResponse$ } = require('../../tools/GraphqlResponseTools');
 
 let instance;
@@ -10,8 +11,12 @@ let instance;
 class ReportsCQRS {
   constructor() {}
 
+  /**
+   * Returns the list of pos items to paint it in the map
+   * @param {*} param0 
+   * @param {*} authToken 
+   */
   getPosCoverage$({ args }, authToken){
-    console.log(args);
     return PosDA.getPosCoverage$(args.businessId, args.product, args.posId)
     .pipe(
       mergeMap(posArray => from(posArray)
@@ -23,6 +28,11 @@ class ReportsCQRS {
               coordinates: { lat: posInfo.location.coordinates[0], long: posInfo.location.coordinates[1] }
             }
           })),
+          mergeMap(posInfo => forkJoin(
+            of(posInfo),
+            BusinessDA.getBusiness$(posInfo.businessId)
+          )),
+          map(([posinfo, buInfo]) => ({ ...posinfo, businessName: buInfo.name }) ),
           toArray()
         )
       ),

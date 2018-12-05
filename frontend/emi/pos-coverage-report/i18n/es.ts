@@ -21,7 +21,8 @@ export const locale = {
         POS_ID: 'ID del POS',
         BUSISNESS_ID: 'Unidad de negocio',
         USER_NAME: 'Nombre de usuario',
-        LAST_UPDATE: 'Última venta'
+        LAST_UPDATE: 'Última venta',
+        BUSINESS_NAME: 'Unidad de negocio'
       }
     }
   }

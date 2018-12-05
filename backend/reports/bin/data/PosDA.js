@@ -50,7 +50,6 @@ class PosDA {
     if(posId && posId != ""){
        filter._id = { $regex: `${posId}.*`, $options: "i" }
       }
-    console.log("FILTER ==> ", filter);
     return defer(() => collection.find(filter).toArray());
   }
 
