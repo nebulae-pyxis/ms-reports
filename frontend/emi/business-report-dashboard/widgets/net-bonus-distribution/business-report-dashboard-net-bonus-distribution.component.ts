@@ -68,7 +68,7 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
   }
 
   ngOnInit() {
-    this.loadData();
+    setTimeout(() => this.loadData() , 500);
   }
 
   loadData() {

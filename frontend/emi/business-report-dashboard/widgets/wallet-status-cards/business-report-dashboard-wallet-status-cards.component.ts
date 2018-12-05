@@ -40,7 +40,7 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
 
   ngOnInit() {
     this.loadInitialData();
-    this.loadDataset();
+    setTimeout(() => this.loadDataset() , 500);
   }
 
 

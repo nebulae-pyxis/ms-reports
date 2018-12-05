@@ -68,7 +68,7 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
   }
 
   ngOnInit() {
-    this.loadData();
+    setTimeout(() => this.loadData() , 500);
   }
 
 

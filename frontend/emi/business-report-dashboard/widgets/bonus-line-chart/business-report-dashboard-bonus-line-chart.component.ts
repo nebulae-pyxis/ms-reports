@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material';
 import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
 import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
 import { BusinessReportDashboardBonusLineChartService } from './business-report-dashboard-bonus-line-chart.service';
+import { timeout } from 'async';
 
 
 @Component({
@@ -46,7 +47,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.windowSize = [window.innerWidth, window.innerHeight];
     this.registerCustomChartJSPlugin();
     this.loadInitialDataset();
-    this.loadDataset();
+    setTimeout(() => this.loadDataset() , 500);
   }
 
 

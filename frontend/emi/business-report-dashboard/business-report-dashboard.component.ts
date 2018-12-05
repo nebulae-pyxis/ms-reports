@@ -40,8 +40,11 @@ export class BusinessReportDashboardComponent implements OnInit, OnDestroy {
     this.translationLoader.loadTranslations(english, spanish);
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.isPlatformAdmin = this.keycloakService.getUserRoles(true).includes(this.PLATFORM_ADMIN);
+    const userDetails = await this.keycloakService.loadUserProfile();
+    this.businessId = userDetails['attributes']['businessId'] || '';
+    console.log(`@@@@#####@@@@@@@@@@${this.businessId}@@@@@@@@@@@@@@@`);
   }
 
 
