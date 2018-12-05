@@ -16,11 +16,21 @@ const {
 
 const events = [
     {
+        et: 'WalletUpdated',
+        etv: 1,
+        at: 'Wallet',
+        aid: '5bedf03b649a1a00168f48d0',
+        data: { businessId: 'c81860b2-5da0-4c03-8774-445f244bc8d4', pockets: { main: 1200000, bonus: 145366 } },
+        user: 'SYSTEM',
+        timestamp: 1542148523118,
+        av: 1
+    },
+    {
         et: 'WalletSpendingAllowed',
         etv: 1,
         at: 'Wallet',
         aid: '5bedf03b649a1a00168f48d0',
-        data: { businessId: 'c81860b2-5da0-4c03-8774-445f244bc8d4', wallet: { balance: 1200000, bonus: 145366 } },
+        data: { businessId: 'c81860b2-5da0-4c03-8774-445f244bc8d4', wallet: { main: 1200000, bonus: 145366 } },
         user: 'SYSTEM',
         timestamp: 1542148523128,
         av: 1

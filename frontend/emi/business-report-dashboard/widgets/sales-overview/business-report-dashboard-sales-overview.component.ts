@@ -31,7 +31,7 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
 
 
 
-  initialChartData = this.formatDatasets([
+  initialRawData = [
     {
       timespan: "---",
       datasets: [
@@ -46,7 +46,8 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
         }
       ],
     }
-  ]);
+  ];
+  initialChartData = this.formatDatasets(this.initialRawData);
   chartDataset: any = undefined;
 
 
@@ -93,12 +94,12 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
   }
 
   ngOnInit() {
-    setTimeout(() => this.loadDataset() , 500);
+    setTimeout(() => this.loadDataset(), 500);
   }
 
   loadDataset() {
     this.businessReportDashboardWalletStatusCardsService.businessReportDashboardSalesOverview$(this.businessId).pipe(
-      map(ds => this.formatDatasets(ds))
+      map(ds => this.formatDatasets([ ...ds, ...this.initialRawData]))
     ).subscribe(
       (fds) => this.chartDataset = fds,
       (err) => console.error(err),
@@ -144,7 +145,7 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
         acc: '',
         chart: [{ name: 'Main balance', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.mainBalance[i] })) }]
       },
-      
+
       salesQty: {
         label: 'Sales quantity',
         acc: dataset.datasets.salesQty.reduce((total, val) => total + val),

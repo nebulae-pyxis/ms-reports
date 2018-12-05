@@ -40,17 +40,21 @@ class BusinessDashboardReportsDA {
   static updateTimeBox$(keys, fieldsToSet, fieldsToInc, secondaryKeys = []) {
     const collection = mongoDB.db.collection('TimeBox');
     const _id = keys.map(([k, v]) => v).join('_');
-    const updateQuery = [
+    const [query, update,opt] = [
       { _id },
       {
         '$setOnInsert': { ...keys.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {}), ...secondaryKeys.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {}), timestamp: Date.now() },
-        '$set': fieldsToSet.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {}),
-        '$inc': fieldsToInc.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {}),
       },
       { 'multi': false, upsert: true }
     ];
+    if( fieldsToInc.length > 0){      
+      update['$inc'] = fieldsToInc.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {});
+    }
+    if( fieldsToSet.length > 0){
+      update['$set'] = fieldsToSet.reduce((obj, [key, value]) => { obj[key] = value; return obj; }, {});
+    }
 
-    return defer(() => collection.update(...updateQuery)).pipe(
+    return defer(() => collection.update(query, update,opt)).pipe(
       tap(x => { if (x.result.ok !== 1) throw (new Error(`timeBox(id:${id}) updated failed`)); }),
     );
   }

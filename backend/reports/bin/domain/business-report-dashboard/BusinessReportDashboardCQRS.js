@@ -177,8 +177,8 @@ class BusinessReportDashboardCQRS {
                     map(datasets => ({ timespan: 'WEEK', datasets }))
                 )
                 )),
-        ).pipe(       
-            tap(x => console.log(`queryBusinessReportDashboardNetSalesDistribution: ${JSON.stringify(x)}\n`)),     
+        ).pipe(
+            tap(x => console.log(`queryBusinessReportDashboardNetSalesDistribution: ${JSON.stringify(x)}\n`)),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -194,6 +194,125 @@ class BusinessReportDashboardCQRS {
      * retrieves Business-Report-Dashboard Sales-Overview
      */
     queryBusinessReportDashboardSalesOverview$({ root, args, jwt }, authToken) {
+        return Rx.forkJoin(
+
+            BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'YEAR']], 3).pipe(
+                mergeMap(years => Rx.from(years).pipe(
+                    mergeMap(year => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH'], ['YEAR', year.YEAR]], 12).pipe(
+                        mergeMap(months => Rx.from(months).pipe(
+                            map(({ MONTH, MONTH_NAME, sales, bonus, pocket }) => (
+                                { pos: (MONTH - 1), label: MONTH_NAME, mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : sales.pocket.MAIN.sum, bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : sales.pocket.BONUS.sum, creditSales: !sales ? 0 : !sales.pocket.credit ? 0 : sales.pocket.credit.sum, mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : pocket.bonus.current, salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                            )),
+                            reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
+                                acc.mainSales[pos] = mainSales;
+                                acc.bonusSales[pos] = bonusSales;
+                                acc.creditSales[pos] = creditSales;
+                                acc.mainBalance[pos] = mainBalance;
+                                acc.bonusBalance[pos] = bonusBalance;
+                                acc.salesQty[pos] = salesQty;
+                                acc.bonusQty[pos] = bonusQty;
+                                return acc;
+                            },
+                                { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                            ),
+                            map(datasets => ({ timespan: year.YEAR.toString(), scale: '---', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets }))
+                        ))
+                    )),
+                    toArray(),
+                    map(datasets => ({ timespan: 'YEAR', datasets }))
+                ),
+                )),
+
+
+            BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH']], 3).pipe(
+                mergeMap(months => Rx.from(months).pipe(
+                    mergeMap(month => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['MONTH', month.MONTH]], 31).pipe(
+                        mergeMap(days => Rx.from(days).pipe(
+                            map(({ DAY, DAY_NAME, sales, bonus, pocket }) => (
+                                { pos: (DAY - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : sales.pocket.MAIN.sum, bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : sales.pocket.BONUS.sum, creditSales: !sales ? 0 : !sales.pocket.credit ? 0 : sales.pocket.credit.sum, mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : pocket.bonus.current, salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                            )),
+                            reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
+                                acc.mainSales[pos] = mainSales;
+                                acc.bonusSales[pos] = bonusSales;
+                                acc.creditSales[pos] = creditSales;
+                                acc.mainBalance[pos] = mainBalance;
+                                acc.bonusBalance[pos] = bonusBalance;
+                                acc.salesQty[pos] = salesQty;
+                                acc.bonusQty[pos] = bonusQty;
+                                return acc;
+                            },
+                                { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }
+                            ),
+                            map(datasets => ({ timespan: month.MONTH_NAME, scale: '---', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets }))
+                        ))
+                    )),
+                    toArray(),
+                    map(datasets => ({ timespan: 'MONTH', datasets }))
+                ),
+                )),
+
+
+            BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'WEEK']], 3).pipe(
+                mergeMap(weeks => Rx.from(weeks).pipe(
+                    mergeMap(week => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['WEEK', week.WEEK]], 31).pipe(
+                        mergeMap(days => Rx.from(days).pipe(
+                            map(({ DAY_OF_WEEK, DAY_NAME, sales, bonus, pocket }) => (
+                                { pos: (DAY_OF_WEEK - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : sales.pocket.MAIN.sum, bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : sales.pocket.BONUS.sum, creditSales: !sales ? 0 : !sales.pocket.credit ? 0 : sales.pocket.credit.sum, mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : pocket.bonus.current, salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                            )),
+                            reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
+                                acc.mainSales[pos] = mainSales;
+                                acc.bonusSales[pos] = bonusSales;
+                                acc.creditSales[pos] = creditSales;
+                                acc.mainBalance[pos] = mainBalance;
+                                acc.bonusBalance[pos] = bonusBalance;
+                                acc.salesQty[pos] = salesQty;
+                                acc.bonusQty[pos] = bonusQty;
+                                return acc;
+                            },
+                                { mainSales: [0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0] }
+                            ),
+                            map(datasets => ({ timespan: week.WEEK.toString(), scale: '---', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets }))
+                        ))
+                    )),
+                    toArray(),
+                    map(datasets => ({ timespan: 'WEEK', datasets }))
+                ),
+                )),
+
+
+
+
+            // BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH']], 3).pipe(
+            //     mergeMap(months => Rx.from(months).pipe(
+            //         mergeMap(month => Rx.from(Object.keys(month.sales.product)).pipe(
+            //             map(product => ({ product, percentage: month.sales.product[product].sum, value: month.sales.product[product].sum, count: month.sales.product[product].count })),
+            //             toArray(),
+            //             map(dataset => ({ timespan: month.MONTH_NAME.toString(), dataset }))
+            //         )),
+            //         toArray(),
+            //         map(datasets => ({ timespan: 'MONTH', datasets }))
+            //     )
+            //     )),
+            // BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'WEEK']], 3).pipe(
+            //     mergeMap(weeks => Rx.from(weeks).pipe(
+            //         mergeMap(week => Rx.from(Object.keys(week.sales.product)).pipe(
+            //             map(product => ({ product, percentage: week.sales.product[product].sum, value: week.sales.product[product].sum, count: week.sales.product[product].count })),
+            //             toArray(),
+            //             map(dataset => ({ timespan: week.WEEK.toString(), dataset }))
+            //         )),
+            //         toArray(),
+            //         map(datasets => ({ timespan: 'WEEK', datasets }))
+            //     )
+            //     )),
+        ).pipe(
+            tap(x => console.log(`queryBusinessReportDashboardSalesOverview: ${JSON.stringify(x)}\n`)),
+            mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
+            catchError(error => {
+                this.logError(error);
+                return GraphqlResponseTools.handleError$(error);
+            })
+        );
+
         return Rx.of(
             [
                 {
@@ -219,7 +338,7 @@ class BusinessReportDashboardCQRS {
                 },
             ]
         ).pipe(
-            tap(x => console.log(`queryBusinessReportDashboardSalesOverview: ${JSON.stringify(x)}\n`)),     
+            tap(x => console.log(`queryBusinessReportDashboardSalesOverview: ${JSON.stringify(x)}\n`)),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
             catchError(error => {
                 this.logError(error);
@@ -251,7 +370,7 @@ class BusinessReportDashboardCQRS {
                         {
                             order: 2,
                             name: 'Comisiones',
-                            balance:  !business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.bonus,
+                            balance: !business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.bonus,
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },
@@ -265,9 +384,9 @@ class BusinessReportDashboardCQRS {
                     ]
                 }
             }),
-            tap(x => console.log(`queryBusinessReportDashboardWalletStatusCards: ${JSON.stringify(x)}\n`)),     
+            tap(x => console.log(`queryBusinessReportDashboardWalletStatusCards: ${JSON.stringify(x)}\n`)),
             mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
-            catchError(error => {                
+            catchError(error => {
                 this.logError(error);
                 return GraphqlResponseTools.handleError$(error);
             })

@@ -96,7 +96,13 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
       return form;
     }, {});
     formated.title = 'Distribución de Comisiones';
-    
+    formated['---'] = {
+      '---': {
+        'mainChart': [{ name: '...', value: 100 }],
+        'footerLeft': { 'title': 'Ventas', 'count': 0 },
+        'footerRight': { 'title': 'Cantidad', 'count': 0 },
+      }
+    };
     return formated;
   }
 

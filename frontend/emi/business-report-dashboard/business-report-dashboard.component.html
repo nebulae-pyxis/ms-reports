@@ -4,9 +4,8 @@
 
   <div class="content-cards" fxLayout="column">
     <business-report-dashboard-wallet-status-cards [businessId]=businessId [timeSpanSelected]=timeSpanSelected></business-report-dashboard-wallet-status-cards>
-    <!-- <business-report-dashboard-sales-overview [businessId]=businessId [timeSpanSelected]=timeSpanSelected [subTimeSpanSelected]=subTimeSpanSelected></business-report-dashboard-sales-overview> -->
-
-    
+    <business-report-dashboard-sales-overview [businessId]=businessId [timeSpanSelected]=timeSpanSelected [subTimeSpanSelected]=subTimeSpanSelected></business-report-dashboard-sales-overview>
+        
     <div class="content-cards" fxLayout="row wrap" fxFlex="100">
       <business-report-dashboard-net-sales-distribution fxFlex="100" fxFlex.gt-sm="50" [businessId]=businessId [timeSpanSelected]=timeSpanSelected [subTimeSpanSelected]=subTimeSpanSelected></business-report-dashboard-net-sales-distribution>
       <business-report-dashboard-net-bonus-distribution fxFlex="100" fxFlex.gt-sm="50" [businessId]=businessId [timeSpanSelected]=timeSpanSelected [subTimeSpanSelected]=subTimeSpanSelected></business-report-dashboard-net-bonus-distribution>  
