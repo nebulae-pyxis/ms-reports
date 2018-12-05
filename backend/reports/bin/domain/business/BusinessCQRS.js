@@ -4,12 +4,10 @@ const BusinessDA = require("../../data/BusinessDA");
 const RoleValidator = require("../../tools/RoleValidator");
 const { CustomError, DefaultError } = require("../../tools/customError");
 const { buildSuccessResponse$, handleError$ } = require('../../tools/GraphqlResponseTools');
-const {
-  PERMISSION_DENIED_ERROR,
-  INTERNAL_SERVER_ERROR
-} = require("../../tools/ErrorCodes");
+const { PERMISSION_DENIED_ERROR, INTERNAL_SERVER_ERROR } = require("../../tools/ErrorCodes");
 
 let instance;
+
 
 class BusinessCQRS {
   constructor() {}
@@ -26,11 +24,11 @@ class BusinessCQRS {
       "wallet",
       "getWalletBusinesses$()",
       PERMISSION_DENIED_ERROR,
-      ["SYSADMIN", "business-owner"]
+      ["PLATFORM-ADMIN", "BUSINESS-OWNER"]
     ).pipe(
-      mergeMap(rolResult => rolResult['SYSADMIN']
+      mergeMap(rolResult => rolResult['PLATFORM-ADMIN']
         ? BusinessDA.getAllBusinesses$()
-        : rolResult['business-owner']
+        : rolResult['BUSINESS-OWNER']
           ? BusinessDA.getBusiness$('') 
           : throwError(new CustomError("Query not allowed", "getWalletBusinesses$", 23006, "Roles not enough" ) )
       ),

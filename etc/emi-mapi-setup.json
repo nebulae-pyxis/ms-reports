@@ -1,8 +1,8 @@
 [
     {
-        "name": "reports",
+        "name": "pos-coverage-report",
         "type": "graphql",        
-        "src": "api/emi-gateway/graphql/reports",
+        "src": "api/emi-gateway/graphql/pos-coverage-report",
         "preBuildCommands": []
     },
     {

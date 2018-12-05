@@ -14,7 +14,6 @@ class ReportsCQRS {
     console.log(args);
     return PosDA.getPosCoverage$(args.businessId, args.product, args.posId)
     .pipe(
-      tap(r => console.log("RESULT length==> ", r.length)),
       mergeMap(posArray => from(posArray)
         .pipe(
           map(posInfo => ({

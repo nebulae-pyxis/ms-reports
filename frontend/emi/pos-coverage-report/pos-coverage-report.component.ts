@@ -24,7 +24,7 @@ import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toAr
   animations: fuseAnimations
 })
 export class PosCoverageReportComponent implements OnInit, OnDestroy {
-  isSystemAdmin = false;
+  isPlatformAdmin = false;
   filterForm: FormGroup = new FormGroup({
     businessId: new FormControl(),
     product: new FormControl(),
@@ -46,7 +46,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   selectedMarker: MarkerRef;
 
   businessVsProducts: any[];
-  SYS_ADMIN = 'SYSADMIN';
+  PLATFORM_ADMIN = 'PLATFORM-ADMIN';
   productOpstions: string[];
   subscriptions: Subscription[] = [];
 
@@ -64,14 +64,14 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.initMap(); // initialize the map element
-    this.isSystemAdmin = this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN);
+    this.isPlatformAdmin = this.keycloakService.getUserRoles(true).includes(this.PLATFORM_ADMIN);
     this.initObservables();
 
   concat(
-    // update the [isSysAdmin] variable
-    of(this.keycloakService.getUserRoles(true).includes(this.SYS_ADMIN))
+    // update the [isPLATFORM-ADMIN] variable
+    of(this.keycloakService.getUserRoles(true).includes(this.PLATFORM_ADMIN))
     .pipe(
-      tap((isSysAdm) => this.isSystemAdmin = isSysAdm )
+      tap((isPlatformAdmin) => this.isPlatformAdmin = isPlatformAdmin )
     ),
     // fetch the business and its products options
     this.reportService.getBusinessAndProducts$()
@@ -82,7 +82,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         return acc;
       }, [])),
       map( (businessOptions: any[]) => {
-        if (this.isSystemAdmin){
+        if (this.isPlatformAdmin){
           businessOptions.push({ businessName: 'ALL-TODAS', businessId: 'null', products: [] });
         }
         return businessOptions;
@@ -236,7 +236,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         .pipe(
           tap(newSelectedBusinessId => {
             this.productOpstions =
-              (this.isSystemAdmin && newSelectedBusinessId === 'null')
+              (this.isPlatformAdmin && newSelectedBusinessId === 'null')
                 ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
                 : this.businessVsProducts.find(e => e.businessId === newSelectedBusinessId).products;
             this.productOpstions = this.productOpstions.filter(this.onlyUnique);
