@@ -96,7 +96,7 @@ class BusinessReportDashboardCQRS {
             BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'YEAR']], 3).pipe(
                 mergeMap(years => Rx.from(years).pipe(
                     mergeMap(year => Rx.from(Object.keys(year.bonus.product)).pipe(
-                        map(product => ({ product, percentage: year.bonus.product[product].sum, value: year.bonus.product[product].sum, count: year.bonus.product[product].count })),
+                        map(product => ({ product, percentage: year.bonus.product[product].sum, value: Math.round(year.bonus.product[product].sum), count: year.bonus.product[product].count })),
                         toArray(),
                         map(dataset => ({ timespan: year.YEAR.toString(), dataset }))
                     )),
@@ -107,7 +107,7 @@ class BusinessReportDashboardCQRS {
             BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH']], 3).pipe(
                 mergeMap(months => Rx.from(months).pipe(
                     mergeMap(month => Rx.from(Object.keys(month.bonus.product)).pipe(
-                        map(product => ({ product, percentage: month.bonus.product[product].sum, value: month.bonus.product[product].sum, count: month.bonus.product[product].count })),
+                        map(product => ({ product, percentage: month.bonus.product[product].sum, value: Math.round(month.bonus.product[product].sum), count: month.bonus.product[product].count })),
                         toArray(),
                         map(dataset => ({ timespan: month.MONTH_NAME.toString(), dataset }))
                     )),
@@ -118,7 +118,7 @@ class BusinessReportDashboardCQRS {
             BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'WEEK']], 3).pipe(
                 mergeMap(weeks => Rx.from(weeks).pipe(
                     mergeMap(week => Rx.from(Object.keys(week.bonus.product)).pipe(
-                        map(product => ({ product, percentage: week.bonus.product[product].sum, value: week.bonus.product[product].sum, count: week.bonus.product[product].count })),
+                        map(product => ({ product, percentage: week.bonus.product[product].sum, value: Math.round(week.bonus.product[product].sum), count: week.bonus.product[product].count })),
                         toArray(),
                         map(dataset => ({ timespan: week.WEEK.toString(), dataset }))
                     )),
