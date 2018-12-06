@@ -191,7 +191,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   /**
    * REcieves a dataset and format it to be chart compatible
    */
-  formatDataSet(dataSet) {
+  formatDataSet(dataSet) {    
     const result = {
       timeSpans: {},
       chartType: 'line',
@@ -246,8 +246,8 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
             {
               display: false,
               ticks: {
-                min: 1.5,
-                max: 5,
+                min: 0,
+                max: 50,
                 stepSize: 0.5
               }
             }
@@ -278,6 +278,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       datasets.forEach(d => {        
         result.timeSpans[timeSpan].datasetOptions.push(d.label);
         result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];        
+
       })
 
     });
