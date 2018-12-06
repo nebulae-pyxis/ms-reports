@@ -90,6 +90,7 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
         }
         if ( this.keycloakService.getUserRoles(true).includes('BUSINESS-OWNER') && businessOptions.length === 1 ){
           this.filterForm.get('businessId').setValue(businessOptions[0].businessId);
+          this.productOpstions = businessOptions[0].products;
         }
         return businessOptions;
       }),
@@ -241,6 +242,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       this.filterForm.get('businessId').valueChanges
         .pipe(
           tap(newSelectedBusinessId => {
+            console.log("BUSINESS UNIT SELECTED =======> ", newSelectedBusinessId );
+            console.log("businessVsProducts ===> ", this.businessVsProducts);
             this.productOpstions =
               (this.isPlatformAdmin && newSelectedBusinessId === 'null')
                 ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
