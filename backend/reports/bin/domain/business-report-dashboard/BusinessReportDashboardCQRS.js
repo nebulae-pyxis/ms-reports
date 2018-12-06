@@ -286,39 +286,6 @@ class BusinessReportDashboardCQRS {
                 return GraphqlResponseTools.handleError$(error);
             })
         );
-
-        return Rx.of(
-            [
-                {
-                    timespan: "YEAR", datasets: [
-                        { timespan: '2017', scale: '---', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: '2016', scale: '---', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: '2015', scale: '---', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, }
-                    ],
-                },
-                {
-                    timespan: "MONTH", datasets: [
-                        { timespan: 'FEB', scale: '---', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: 'MAR', scale: '---', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: 'JUN', scale: '---', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], }, },
-                    ],
-                },
-                {
-                    timespan: "WEEK", datasets: [
-                        { timespan: '2 WEEKS AGO', scale: '---', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: 'PAST', scale: '---', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets: { mainSales: [0, 0, 0, 0, 0, 0, 0], bonusSales: [0, 0, 0, 0, 0, 0, 0], creditSales: [0, 0, 0, 0, 0, 0, 0], mainBalance: [0, 0, 0, 0, 0, 0, 0], bonusBalance: [0, 0, 0, 0, 0, 0, 0], salesQty: [0, 0, 0, 0, 0, 0, 0], bonusQty: [0, 0, 0, 0, 0, 0, 0], }, },
-                        { timespan: 'CURRENT', scale: '---', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets: { mainSales: [1, 6, 3, 2, 6, 8, 2], bonusSales: [5, 3, 8, 0, 4, 3, 2], creditSales: [7, 3, 2, 6, 8, 4, 1], mainBalance: [4, 5, 6, 7, 6, 5, 4], bonusBalance: [4, 5, 6, 7, 8, 9, 0], salesQty: [1, 6, 2, 5, 3, 4, 2], bonusQty: [7, 3, 2, 5, 7, 2, 3], }, },
-                    ],
-                },
-            ]
-        ).pipe(
-            tap(x => console.log(`queryBusinessReportDashboardSalesOverview: ${JSON.stringify(x)}\n`)),
-            mergeMap(rawResponse => GraphqlResponseTools.buildSuccessResponse$(rawResponse)),
-            catchError(error => {
-                this.logError(error);
-                return GraphqlResponseTools.handleError$(error);
-            })
-        );
     }
 
 
@@ -337,21 +304,21 @@ class BusinessReportDashboardCQRS {
                         {
                             order: 1,
                             name: 'Bolsa',
-                            balance: mainBalance < 0 ? 0 : mainBalance,
+                            balance: Math.round(mainBalance < 0 ? 0 : mainBalance),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },
                         {
                             order: 2,
                             name: 'Comisiones',
-                            balance: !business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.bonus,
+                            balance: Math.round(!business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.bonus),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },
                         {
                             order: 3,
                             name: 'Credito',
-                            balance: mainBalance < 0 ? Math.abs(mainBalance) : 0,
+                            balance: Math.round(mainBalance < 0 ? Math.abs(mainBalance) : 0),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },

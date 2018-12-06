@@ -141,24 +141,24 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
   getSupportingChartData(dataset) {
     return {
       mainBalance: {
-        label: 'Main balance',
+        label: 'Saldo bolsa',
         acc: '',
         chart: [{ name: 'Main balance', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.mainBalance[i] })) }]
       },
 
       salesQty: {
-        label: 'Sales quantity',
+        label: 'Cantindad de ventas',
         acc: dataset.datasets.salesQty.reduce((total, val) => total + val),
         chart: [{ name: 'Sales quantity', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.salesQty[i] })) }]
       },
 
       bonusBalance: {
-        label: 'Bonus balance',
+        label: 'Saldo comisión',
         acc: '',
         chart: [{ name: 'Bonus balance', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusBalance[i] })) }]
       },
       bonusQty: {
-        label: 'Bonus quantity',
+        label: 'Cantidad de comisiones',
         acc: dataset.datasets.bonusQty.reduce((total, val) => total + val),
         chart: [{ name: 'Bonus quantity', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusQty[i] })) }]
       },
