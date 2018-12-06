@@ -13,7 +13,7 @@ import { MatSnackBar } from '@angular/material';
 import { MapRef } from './entities/agmMapRef';
 import { MarkerCluster } from './entities/markerCluster';
 import { MarkerRef, PosPoint, MarkerRefOriginalInfoWindowContent } from './entities/markerRef';
-import { of, concat, from, forkJoin } from 'rxjs';
+import { of, concat, from, forkJoin, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, startWith, tap, map, mergeMap, toArray, filter, mapTo } from 'rxjs/operators';
 
 @Component({
@@ -31,6 +31,9 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
     posId: new FormControl()
   });
   @ViewChild('gmap') gmapElement: any;
+
+  selectedBusiness: { businessName: string, businessId: string, products: string[] };
+  businessQueryFiltered$: Observable<any[]>;
 
   mapTypes = [
     google.maps.MapTypeId.HYBRID,
@@ -84,6 +87,10 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       map( (businessOptions: any[]) => {
         if (this.isPlatformAdmin){
           businessOptions.push({ businessName: 'ALL-TODAS', businessId: 'null', products: [] });
+        }
+        if ( this.keycloakService.getUserRoles(true).includes('BUSINESS-OWNER') && businessOptions.length === 1 ){
+          this.filterForm.get('businessId').setValue(businessOptions[0].businessId);
+          this.productOpstions = businessOptions[0].products;
         }
         return businessOptions;
       }),
@@ -235,6 +242,8 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       this.filterForm.get('businessId').valueChanges
         .pipe(
           tap(newSelectedBusinessId => {
+            console.log("BUSINESS UNIT SELECTED =======> ", newSelectedBusinessId );
+            console.log("businessVsProducts ===> ", this.businessVsProducts);
             this.productOpstions =
               (this.isPlatformAdmin && newSelectedBusinessId === 'null')
                 ? this.businessVsProducts.reduce((acc, item) => [...acc, ...item.products], [])
@@ -299,6 +308,10 @@ export class PosCoverageReportComponent implements OnInit, OnDestroy {
       .subscribe(() => { }, err => console.error(err), () => { })
     );
   }
+
+  // onSelectBusinessEvent(business: any){
+  //   this.selectedBusiness = business;
+  // }
 
   updateMarkerInfoWindowContent$(translations: any) {
     return from(this.markers)
