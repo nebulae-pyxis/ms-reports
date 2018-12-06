@@ -201,7 +201,7 @@ class BusinessReportDashboardCQRS {
                     mergeMap(year => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH'], ['YEAR', year.YEAR]], 12).pipe(
                         mergeMap(months => Rx.from(months).pipe(
                             map(({ MONTH, MONTH_NAME, sales, bonus, pocket }) => (
-                                { pos: (MONTH - 1), label: MONTH_NAME, mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                                { pos: (MONTH - 1), label: MONTH_NAME, mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : Math.round(pocket.main.current), bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
                             )),
                             reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
                                 acc.mainSales[pos] = mainSales;
@@ -229,7 +229,7 @@ class BusinessReportDashboardCQRS {
                     mergeMap(month => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['MONTH', month.MONTH]], 31).pipe(
                         mergeMap(days => Rx.from(days).pipe(
                             map(({ DAY, DAY_NAME, sales, bonus, pocket }) => (
-                                { pos: (DAY - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : pocket.bonus.current, salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                                { pos: (DAY - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : Math.round(pocket.main.current), bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 :Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
                             )),
                             reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
                                 acc.mainSales[pos] = mainSales;
@@ -257,7 +257,7 @@ class BusinessReportDashboardCQRS {
                     mergeMap(week => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['WEEK', week.WEEK]], 31).pipe(
                         mergeMap(days => Rx.from(days).pipe(
                             map(({ DAY_OF_WEEK, DAY_NAME, sales, bonus, pocket }) => (
-                                { pos: (DAY_OF_WEEK - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : sales.pocket.MAIN.sum, bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : pocket.main.current, bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : pocket.bonus.current, salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                                { pos: (DAY_OF_WEEK - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : sales.pocket.MAIN.sum, bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : Math.round(pocket.main.current), bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
                             )),
                             reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
                                 acc.mainSales[pos] = mainSales;

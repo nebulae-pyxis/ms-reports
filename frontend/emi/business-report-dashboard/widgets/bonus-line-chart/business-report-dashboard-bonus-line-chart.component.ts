@@ -33,6 +33,64 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   timeSpanOptions: string[];
   windowSize: number[];
 
+  options =  {
+    spanGaps: false,
+    legend: {
+      display: false
+    },
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 32,
+        left: 32,
+        right: 32
+      }
+    },
+    elements: {
+      point: {
+        radius: 4,
+        borderWidth: 2,
+        hoverRadius: 4,
+        hoverBorderWidth: 2
+      },
+      line: {
+        tension: 0
+      }
+    },
+    scales: {
+      xAxes: [
+        {
+          gridLines: {
+            display: false,
+            drawBorder: false,
+            tickMarkLength: 10
+          },
+          ticks: {
+            fontColor: '#ffffff'
+          }
+        }
+      ],
+      yAxes: [
+        {
+          display: false,
+          ticks: {
+            min: 0,
+            max: 100,
+            stepSize: 0.5
+          }
+        }
+      ]
+    },
+    plugins: {
+      filler: {
+        propagate: false
+      },
+      xLabelsOnTop: {
+        active: true
+      }
+    }
+  };
+
 
   constructor(
     private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,
@@ -205,63 +263,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
           pointHoverBorderColor: '#ffffff'
         }
       ],
-      options: {
-        spanGaps: false,
-        legend: {
-          display: false
-        },
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            top: 32,
-            left: 32,
-            right: 32
-          }
-        },
-        elements: {
-          point: {
-            radius: 4,
-            borderWidth: 2,
-            hoverRadius: 4,
-            hoverBorderWidth: 2
-          },
-          line: {
-            tension: 0
-          }
-        },
-        scales: {
-          xAxes: [
-            {
-              gridLines: {
-                display: false,
-                drawBorder: false,
-                tickMarkLength: 10
-              },
-              ticks: {
-                fontColor: '#ffffff'
-              }
-            }
-          ],
-          yAxes: [
-            {
-              display: false,
-              ticks: {
-                min: 0,
-                max: 50,
-                stepSize: 0.5
-              }
-            }
-          ]
-        },
-        plugins: {
-          filler: {
-            propagate: false
-          },
-          xLabelsOnTop: {
-            active: true
-          }
-        }
-      }
+      
 
     };
 
@@ -278,7 +280,14 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       datasets.forEach(d => {        
         result.timeSpans[timeSpan].datasetOptions.push(d.label);
         result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];        
-
+        
+        const yMax = Math.max(...d.data);      
+        console.log(`${yMax} vs ${this.options.scales.yAxes[0].ticks.max}`); 
+        if(this.options.scales.yAxes[0].ticks.max < yMax){
+          this.options = {...this.options};
+          this.options.scales.yAxes[0].ticks.max = yMax;
+        }
+        
       })
 
     });
