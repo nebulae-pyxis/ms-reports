@@ -18,7 +18,8 @@ class BusinessCQRS {
    * @param {*} args args that contain the business filters
    */
   getBusinesses$({ args }, authToken) {
-    console.log("Fetching the businesses array ...", new Date().toLocaleTimeString());
+    console.log("Fetching the businesses array ...", new Date().toLocaleTimeString(), JSON.stringify(authToken) );
+
     return RoleValidator.checkPermissions$(
       authToken.realm_access.roles,
       "wallet",
@@ -29,7 +30,7 @@ class BusinessCQRS {
       mergeMap(rolResult => rolResult['PLATFORM-ADMIN']
         ? BusinessDA.getAllBusinesses$()
         : rolResult['BUSINESS-OWNER']
-          ? BusinessDA.getBusiness$('') 
+          ? BusinessDA.getBusiness$(authToken.businessId) 
           : throwError(new CustomError("Query not allowed", "getWalletBusinesses$", 23006, "Roles not enough" ) )
       ),
       toArray(),
