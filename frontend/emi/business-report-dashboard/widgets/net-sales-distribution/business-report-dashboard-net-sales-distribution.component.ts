@@ -1,15 +1,21 @@
-import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, Input } from '@angular/core';
-import { fuseAnimations } from '../../../../../core/animations';
-import { locale as english } from './i18n/en';
-import { locale as spanish } from './i18n/es';
-import * as shape from 'd3-shape';
-import * as Rx from 'rxjs/Rx';
+////////// ANGULAR & Fuse UI //////////
+import { Component, OnDestroy, OnInit, ViewChild, HostListener, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
-import { of, combineLatest, Observable, forkJoin, concat, Subscription, fromEvent } from 'rxjs';
-import { mergeMap, debounceTime, delay, startWith, tap, map } from 'rxjs/operators';
+import { fuseAnimations } from '../../../../../core/animations';
+
+////////// RXJS //////////
+import { of, combineLatest, Observable, forkJoin, concat, Subscription, Subject } from 'rxjs';
+import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
+
+//////////// i18n ////////////
+import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
+import { TranslateService, LangChangeEvent, TranslationChangeEvent } from "@ngx-translate/core";
+import { locale as english } from './i18n/en';
+import { locale as spanish } from './i18n/es';
+
+//////////// Services ////////////
+import { KeycloakService } from 'keycloak-angular';
 import { BusinessReportDashboardNetSalesDistributionService } from './business-report-dashboard-net-sales-distribution.service';
 
 
@@ -33,8 +39,8 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
     '---': {
       '---': {
         'mainChart': [{ name: '...', value: 100 }],
-        'footerLeft': { 'title': 'Sales', 'count': 0 },
-        'footerRight': { 'title': 'Count', 'count': 0 },
+        'footerLeft': { 'title': 'FOOTER_LEFT', 'count': 0 },
+        'footerRight': { 'title': 'FOOTER_RIGHT', 'count': 0 },
       }
     }
   };
@@ -88,19 +94,19 @@ export class BusinessReportDashboardNetSalesDistributionComponent implements OnI
       form[obj.timespan] = obj.datasets.reduce((dataset, ds) => {
         dataset[ds.timespan] = {
           'mainChart': ds.dataset.map(d => ({ name: d.product, value: d.percentage })),
-          'footerLeft': { 'title': 'Ventas', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
-          'footerRight': { 'title': 'Cantidad', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
+          'footerLeft': { 'title': 'FOOTER_LEFT', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
+          'footerRight': { 'title': 'FOOTER_RIGHT', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
         }
         return dataset;
       }, {});
       return form;
     }, {});
-    formated.title = 'Distribución de ventas';
+    formated.title = 'TITLE';
     formated['---'] = {
       '---': {
         'mainChart': [{ name: '...', value: 100 }],
-        'footerLeft': { 'title': 'Ventas', 'count': 0 },
-        'footerRight': { 'title': 'Cantidad', 'count': 0 },
+        'footerLeft': { 'title': 'FOOTER_LEFT', 'count': 0 },
+        'footerRight': { 'title': 'FOOTER_RIGHT', 'count': 0 },
       }
     };
     return formated;

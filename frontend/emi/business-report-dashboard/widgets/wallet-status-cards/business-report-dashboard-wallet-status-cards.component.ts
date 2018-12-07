@@ -1,14 +1,21 @@
-import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, Input } from '@angular/core';
-import { fuseAnimations } from '../../../../../core/animations';
-import { locale as english } from './i18n/en';
-import { locale as spanish } from './i18n/es';
-import * as Rx from 'rxjs/Rx';
+////////// ANGULAR & Fuse UI //////////
+import { Component, OnDestroy, OnInit, ViewChild, HostListener, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
-import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
+import { fuseAnimations } from '../../../../../core/animations';
+
+////////// RXJS //////////
+import { of, combineLatest, Observable, forkJoin, concat, Subscription, Subject } from 'rxjs';
 import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
+
+//////////// i18n ////////////
+import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
+import { TranslateService, LangChangeEvent, TranslationChangeEvent } from "@ngx-translate/core";
+import { locale as english } from './i18n/en';
+import { locale as spanish } from './i18n/es';
+
+//////////// Services ////////////
+import { KeycloakService } from 'keycloak-angular';
 import { BusinessReportDashboardWalletStatusCardsService } from './business-report-dashboard-wallet-status-cards.service';
 
 
@@ -30,9 +37,10 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
   dataset: any;
 
   constructor(
-    private businessReportDashboardWalletStatusCardsService: BusinessReportDashboardWalletStatusCardsService,
     private translationLoader: FuseTranslationLoaderService,
+    private translate: TranslateService,
     public snackBar: MatSnackBar,
+    private businessReportDashboardWalletStatusCardsService: BusinessReportDashboardWalletStatusCardsService,
     private keycloakService: KeycloakService
   ) {
     this.translationLoader.loadTranslations(english, spanish);
@@ -80,9 +88,9 @@ export class BusinessReportDashboardWalletStatusCardsComponent implements OnInit
         lastUpdate: p.lastUpdate
       }));
     dataset.push({
-      title: 'Ventas permitidas',
-      value: walletStatus.spendingAllowed ? 'SI' : 'NO',
-      valueDesc: '',
+      title: 'SPENDING_ALLOWED',
+      value: walletStatus.spendingAllowed,
+      valueDesc: this.translationLoader.getTranslate().instant(`WALLET_STATUS.SPENDING_ALLOWED.DESC`),
       lastUpdate: Date.now(),
       valueColor: 'green-fg',
     });

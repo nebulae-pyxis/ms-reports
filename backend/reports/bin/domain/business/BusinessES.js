@@ -73,7 +73,7 @@ class BusinessES {
    * updates business state
    * @param {Event} event 
    */
-  handleWalletUpdatedEvent$(event) {
+  handleWalletPocketUpdatedEvent$(event) {
     const data = event.data;
     const businessId = data.businessId;
     const fieldsToSet = [['lastUpdate', Date.now()], ['pocket.bonus.current', data.pockets.bonus], ['pocket.main.current', data.pockets.main]];

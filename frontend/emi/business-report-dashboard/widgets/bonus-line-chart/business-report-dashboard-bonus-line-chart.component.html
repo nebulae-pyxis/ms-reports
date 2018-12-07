@@ -2,8 +2,8 @@
 
   <div class="position-relative p-24 mat-blue-600-bg" fxLayout="row" fxLayoutAlign="space-between center">
     <div fxLayout="column" fxLayoutAlign="start start">
-      <span class="h2">Comisiones</span>
-      <span class="h5 secondary-text">Comisiones ganadas ({{bonusLineChartData.timeSpans[timeSpanSelected].scale}}) </span>
+      <span class="h2">{{'TITLE' | translate}}</span>
+      <span class="h5 secondary-text">{{'DESCRIPTION' | translate}} </span>
     </div>
 
 
@@ -11,7 +11,7 @@
       <div fxLayout="row" fxLayoutAlign="start center">
         <div *ngFor="let tso of timeSpanOptions" class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
           (click)="updateTimeSpan(tso);" [ngClass]="{'blue-300-bg': timeSpanSelected === tso}">
-          {{tso}}
+          {{ 'TIMESPANS.'+tso | translate}}
         </div>
       </div>
 
@@ -20,7 +20,7 @@
 
         <div *ngFor="let dso of bonusLineChartData.timeSpans[timeSpanSelected].datasetOptions" class="py-8 px-12 border-radius-2 line-height-1 mr-8 cursor-pointer"
           (click)="updateSubTimeSpan(dso);" [ngClass]="{'blue-300-bg': subTimeSpanSelected === dso}">
-          {{dso}}
+          {{ 'SUBTIMESPANS.'+dso | translate}}
         </div>
       </div>
     </div>
@@ -28,8 +28,8 @@
 
   <div class="position-relative h-256 pb-16 mat-blue-600-bg">
     <canvas baseChart [datasets]="bonusLineChartData.timeSpans[timeSpanSelected].datasets[subTimeSpanSelected]"
-      [labels]="chartLabels" [colors]="bonusLineChartData.colors" [options]="options"
-      [chartType]="bonusLineChartData.chartType">
+      [labels]="chartLabels" [colors]="options.colors" [options]="options"
+      [chartType]="options.chartType"   >
     </canvas>
   </div>
 

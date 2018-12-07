@@ -1,17 +1,23 @@
-import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
-import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, Input } from '@angular/core';
-import { fuseAnimations } from '../../../../../core/animations';
-import { locale as english } from './i18n/en';
-import { locale as spanish } from './i18n/es';
-import * as shape from 'd3-shape';
-import * as Rx from 'rxjs/Rx';
+////////// ANGULAR & Fuse UI //////////
+import { Component, OnDestroy, OnInit, ViewChild, HostListener, EventEmitter, Input, Output } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
-import { of, combineLatest, Observable, forkJoin, concat, Subscription, fromEvent } from 'rxjs';
-import { mergeMap, debounceTime, delay, startWith, tap, map } from 'rxjs/operators';
-import { BusinessReportDashboardSalesOverviewService } from './business-report-dashboard-sales-overview.service';
+import { fuseAnimations } from '../../../../../core/animations';
 
+////////// RXJS //////////
+import { of, combineLatest, Observable, forkJoin, concat, Subscription, Subject } from 'rxjs';
+import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
+
+//////////// i18n ////////////
+import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
+import { TranslateService, LangChangeEvent, TranslationChangeEvent } from "@ngx-translate/core";
+import { locale as english } from './i18n/en';
+import { locale as spanish } from './i18n/es';
+
+//////////// Services ////////////
+import { KeycloakService } from 'keycloak-angular';
+import * as shape from 'd3-shape';
+import { BusinessReportDashboardSalesOverviewService } from './business-report-dashboard-sales-overview.service';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -22,8 +28,6 @@ import { BusinessReportDashboardSalesOverviewService } from './business-report-d
   animations: fuseAnimations
 })
 export class BusinessReportDashboardSalesOverviewComponent implements OnInit, OnDestroy {
-
-
 
   @Input() businessId;
   @Input() timeSpanSelected;
@@ -80,7 +84,6 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
       curve: shape.curveBasis
     }
   };
-  chartLabels = [];
 
   subscriptions: Subscription[] = [];
 
@@ -99,7 +102,7 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
 
   loadDataset() {
     this.businessReportDashboardWalletStatusCardsService.businessReportDashboardSalesOverview$(this.businessId).pipe(
-      map(ds => this.formatDatasets([ ...ds, ...this.initialRawData]))
+      map(ds => this.formatDatasets([...ds, ...this.initialRawData]))
     ).subscribe(
       (fds) => this.chartDataset = fds,
       (err) => console.error(err),
@@ -129,11 +132,11 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
 
   getMainChartData(dataset) {
     return dataset.labels.map((name, i) => ({
-      name,
+      name: this.translationLoader.getTranslate().instant(`CHART.SUBTIMESPANS.${name}`),
       series: [
-        { name: 'Using main', value: dataset.datasets.mainSales[i] },
-        { name: 'Using Bonus', value: dataset.datasets.bonusSales[i] },
-        { name: 'Using credit', value: dataset.datasets.creditSales[i] },
+        { name: this.translationLoader.getTranslate().instant('CHART.FROM_MAIN'), value: dataset.datasets.mainSales[i] },
+        { name: this.translationLoader.getTranslate().instant('CHART.FROM_BONUS'), value: dataset.datasets.bonusSales[i] },
+        { name: this.translationLoader.getTranslate().instant('CHART.FROM_CREDIT'), value: dataset.datasets.creditSales[i] },
       ]
     }));
   }
@@ -141,26 +144,26 @@ export class BusinessReportDashboardSalesOverviewComponent implements OnInit, On
   getSupportingChartData(dataset) {
     return {
       mainBalance: {
-        label: 'Saldo bolsa',
+        label: 'MAIN_BALANCE',
         acc: '',
-        chart: [{ name: 'Main balance', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.mainBalance[i] })) }]
+        chart: [{ name: this.translationLoader.getTranslate().instant('CHART.SUPPORT.MAIN_BALANCE.TITLE'), series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.mainBalance[i] })) }]
       },
 
       salesQty: {
-        label: 'Cantindad de ventas',
+        label: 'SALES_QTY',
         acc: dataset.datasets.salesQty.reduce((total, val) => total + val),
-        chart: [{ name: 'Sales quantity', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.salesQty[i] })) }]
+        chart: [{ name: this.translationLoader.getTranslate().instant('CHART.SUPPORT.SALES_QTY.TITLE'), series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.salesQty[i] })) }]
       },
 
       bonusBalance: {
-        label: 'Saldo comisión',
+        label: 'BONUS_BALANCE',
         acc: '',
-        chart: [{ name: 'Bonus balance', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusBalance[i] })) }]
+        chart: [{ name: this.translationLoader.getTranslate().instant('CHART.SUPPORT.BONUS_BALANCE.TITLE'), series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusBalance[i] })) }]
       },
       bonusQty: {
-        label: 'Cantidad de comisiones',
+        label: 'BONUS_QTY',
         acc: dataset.datasets.bonusQty.reduce((total, val) => total + val),
-        chart: [{ name: 'Bonus quantity', series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusQty[i] })) }]
+        chart: [{ name: this.translationLoader.getTranslate().instant('CHART.SUPPORT.BONUS_QTY.TITLE'), series: dataset.labels.map((name, i) => ({ name, value: dataset.datasets.bonusQty[i] })) }]
       },
     };
   }

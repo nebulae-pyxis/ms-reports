@@ -33,8 +33,8 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
     '---': {
       '---': {
         'mainChart': [{ name: '...', value: 100 }],
-        'footerLeft': { 'title': 'Bonus', 'count': 0 },
-        'footerRight': { 'title': 'Count', 'count': 0 },
+        'footerLeft': { 'title': 'FOOTER_LEFT', 'count': 0 },
+        'footerRight': { 'title': 'FOOTER_RIGHT', 'count': 0 },
       }
     }
   };
@@ -88,8 +88,8 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
       form[obj.timespan] = obj.datasets.reduce((dataset, ds) => {
         dataset[ds.timespan] = {
           'mainChart': ds.dataset.map(d => ({ name: d.product, value: d.percentage })),
-          'footerLeft': { 'title': 'Comisiones', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
-          'footerRight': { 'title': 'Cantidad', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
+          'footerLeft': { 'title': 'FOOTER_LEFT', 'count': ds.dataset.reduce((total, d) => total + d.value, 0) },
+          'footerRight': { 'title': 'FOOTER_RIGHT', 'count': ds.dataset.reduce((total, d) => total + d.count, 0) },
         }
         return dataset;
       }, {});
@@ -99,8 +99,8 @@ export class BusinessReportDashboardNetBonusDistributionComponent implements OnI
     formated['---'] = {
       '---': {
         'mainChart': [{ name: '...', value: 100 }],
-        'footerLeft': { 'title': 'Ventas', 'count': 0 },
-        'footerRight': { 'title': 'Cantidad', 'count': 0 },
+        'footerLeft': { 'title': 'FOOTER_LEFT', 'count': 0 },
+        'footerRight': { 'title': 'FOOTER_RIGHT', 'count': 0 },
       }
     };
     return formated;

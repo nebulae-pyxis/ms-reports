@@ -31,13 +31,14 @@ class BusinessReportDashboardCQRS {
                     mergeMap(year => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'MONTH'], ['YEAR', year.YEAR]], 12).pipe(
                         mergeMap(months => Rx.from(months).pipe(
                             map(({ MONTH, MONTH_NAME, bonus }) => ({ pos: (MONTH - 1), label: MONTH_NAME, value: (bonus && bonus.input) ? bonus.input.sum : 0 })),
-                            map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            //map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            map(({pos, label, value}) => ({pos, label, value : Math.round(value)})),
                             reduce((acc, { pos, value }) => { acc[pos] = value; return acc; }, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                             map(data => ({ order: year.YEAR, label: year.YEAR.toString(), data }))
                         ))
                     )),
                     toArray(),
-                    map(datasets => ({ timespan: 'YEAR', order: 3, scale: 'cientos', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets }))
+                    map(datasets => ({ timespan: 'YEAR', order: 3, scale: 'UNIT', labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'], datasets }))
                 )),
             ),
 
@@ -49,13 +50,14 @@ class BusinessReportDashboardCQRS {
                     mergeMap(month => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['MONTH', month.MONTH]], 31).pipe(
                         mergeMap(days => Rx.from(days).pipe(
                             map(({ DAY, DAY_NAME, bonus }) => ({ pos: (DAY - 1), label: DAY_NAME, value: (bonus && bonus.input) ? bonus.input.sum : 0 })),
-                            map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            // map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            map(({pos, label, value}) => ({pos, label, value : Math.round(value)})),
                             reduce((acc, { pos, value }) => { acc[pos] = value; return acc; }, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
                             map(data => ({ order: month.MONTH, label: month.MONTH_NAME.toString(), data }))
                         ))
                     )),
                     toArray(),
-                    map(datasets => ({ timespan: 'MONTH', order: 2, scale: 'cientos', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets }))
+                    map(datasets => ({ timespan: 'MONTH', order: 2, scale: 'UNIT', labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'], datasets }))
                 )),
             ),
 
@@ -67,13 +69,14 @@ class BusinessReportDashboardCQRS {
                     mergeMap(week => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['WEEK', week.WEEK]], 7).pipe(
                         mergeMap(days => Rx.from(days).pipe(
                             map(({ DAY_OF_WEEK, DAY_NAME, bonus }) => ({ pos: (DAY_OF_WEEK - 1), label: DAY_NAME, value: (bonus && bonus.input) ? bonus.input.sum : 0 })),
-                            map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            //map(data => { data.value = data.value / 100; data.value = parseFloat(data.value.toFixed(1)); return data; }),
+                            map(({pos, label, value}) => ({pos, label, value : Math.round(value)})),
                             reduce((acc, { pos, value }) => { acc[pos] = value; return acc; }, [0, 0, 0, 0, 0, 0, 0]),
                             map(data => ({ order: week.WEEK, label: week.WEEK.toString(), data }))
                         ))
                     )),
                     toArray(),
-                    map(datasets => ({ timespan: 'WEEK', order: 1, scale: 'cientos', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets }))
+                    map(datasets => ({ timespan: 'WEEK', order: 1, scale: 'UNIT', labels: ['MON', 'TUE', 'WED', 'THU', 'FRY', 'SAT', 'SUN'], datasets }))
                 )),
             ),
 
@@ -229,7 +232,7 @@ class BusinessReportDashboardCQRS {
                     mergeMap(month => BusinessDashboardReportsDA.findTimeBox$([['businessId', args.businessId], ['timespanType', 'DAY'], ['MONTH', month.MONTH]], 31).pipe(
                         mergeMap(days => Rx.from(days).pipe(
                             map(({ DAY, DAY_NAME, sales, bonus, pocket }) => (
-                                { pos: (DAY - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : Math.round(pocket.main.current), bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 :Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
+                                { pos: (DAY - 1), mainSales: !sales ? 0 : !sales.pocket.MAIN ? 0 : Math.round(sales.pocket.MAIN.sum), bonusSales: !sales ? 0 : !sales.pocket.BONUS ? 0 : Math.round(sales.pocket.BONUS.sum), creditSales: !sales ? 0 : !sales.pocket.CREDIT ? 0 : Math.round(sales.pocket.CREDIT.sum), mainBalance: !pocket ? 0 : !pocket.main ? 0 : Math.round(pocket.main.current), bonusBalance: !pocket ? 0 : !pocket.bonus ? 0 : Math.round(pocket.bonus.current), salesQty: !sales ? 0 : sales.count, bonusQty: !bonus ? 0 : !bonus.input ? 0 : bonus.input.count }
                             )),
                             reduce((acc, { pos, mainSales, bonusSales, creditSales, mainBalance, bonusBalance, salesQty, bonusQty }) => {
                                 acc.mainSales[pos] = mainSales;
@@ -303,21 +306,21 @@ class BusinessReportDashboardCQRS {
                     pockets: [
                         {
                             order: 1,
-                            name: 'Bolsa',
+                            name: 'MAIN',
                             balance: Math.round(mainBalance < 0 ? 0 : mainBalance),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },
                         {
                             order: 2,
-                            name: 'Comisiones',
+                            name: 'BONUS',
                             balance: Math.round(!business.wallet ? 0 : !business.wallet.pockets ? 0 : business.wallet.pockets.bonus),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',
                         },
                         {
                             order: 3,
-                            name: 'Credito',
+                            name: 'CREDIT',
                             balance: Math.round(mainBalance < 0 ? Math.abs(mainBalance) : 0),
                             lastUpdate: business.lastUpdate,
                             currency: 'PESOS',

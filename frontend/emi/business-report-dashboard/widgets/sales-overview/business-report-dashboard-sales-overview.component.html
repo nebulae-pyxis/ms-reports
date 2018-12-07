@@ -4,7 +4,7 @@
         <!-- Front -->
         <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
                 <div class="px-16 border-bottom" fxLayout="row wrap" fxLayoutAlign="space-between center">
-                        <div fxFlex class="py-16 h3"> Resumen de Ventas </div>                        
+                        <div fxFlex class="py-16 h3"> {{ 'CHART.TITLE' | translate }} </div>                        
                 </div>
 
                 <div fxLayout="row wrap" fxLayoutAlign="start start">
@@ -26,7 +26,7 @@
                                 <div fxLayout="column" fxFlex="100" fxFlex.gt-xs="50"  fxLayoutAlign="center" *ngFor="let widget of (chartDataset ? chartDataset[timeSpanSelected][subTimeSpanSelected].supportingChartData : initialChartData['---']['---'].supportingChartData) | keys"
                                         class="mb-24">
                                         <div class="px-24">
-                                                <div class="h4 secondary-text">{{widget.value.label}}</div>
+                                                <div class="h4 secondary-text">{{ 'CHART.SUPPORT.'+widget.value.label+'.TITLE' | translate }}</div>
                                                 <div class="mat-display-1 m-0">
                                                         {{widget.value.acc}}
                                                 </div>

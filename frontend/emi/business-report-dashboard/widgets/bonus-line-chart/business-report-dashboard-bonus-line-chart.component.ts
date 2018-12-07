@@ -1,16 +1,22 @@
-import { KeycloakService } from 'keycloak-angular';
-import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
+////////// ANGULAR & Fuse UI //////////
 import { Component, OnDestroy, OnInit, ViewChild, HostListener, EventEmitter, Input, Output } from '@angular/core';
-import { fuseAnimations } from '../../../../../core/animations';
-import { locale as english } from './i18n/en';
-import { locale as spanish } from './i18n/es';
-import * as Rx from 'rxjs/Rx';
 import { FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
-import { of, combineLatest, Observable, forkJoin, concat, Subscription } from 'rxjs';
+import { fuseAnimations } from '../../../../../core/animations';
+
+////////// RXJS //////////
+import { of, combineLatest, Observable, forkJoin, concat, Subscription, Subject } from 'rxjs';
 import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
+
+//////////// i18n ////////////
+import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
+import { TranslateService, LangChangeEvent, TranslationChangeEvent } from "@ngx-translate/core";
+import { locale as english } from './i18n/en';
+import { locale as spanish } from './i18n/es';
+
+//////////// Services ////////////
+import { KeycloakService } from 'keycloak-angular';
 import { BusinessReportDashboardBonusLineChartService } from './business-report-dashboard-bonus-line-chart.service';
-import { timeout } from 'async';
 
 
 @Component({
@@ -23,94 +29,43 @@ import { timeout } from 'async';
 export class BusinessReportDashboardBonusLineChartComponent implements OnInit, OnDestroy {
 
   timeSpanSelected = '---'
-  subTimeSpanSelected = '---'  
+  subTimeSpanSelected = '---'
   @Output() timeSpan$ = new EventEmitter<{}>();
-  @Input()  businessId: string;  
+  @Input() businessId: string;
 
   chartLabels = [];
   bonusLineChartData;
-  subscriptions: Subscription[] = [];
   timeSpanOptions: string[];
   windowSize: number[];
 
-  options =  {
-    spanGaps: false,
-    legend: {
-      display: false
-    },
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        top: 32,
-        left: 32,
-        right: 32
-      }
-    },
-    elements: {
-      point: {
-        radius: 4,
-        borderWidth: 2,
-        hoverRadius: 4,
-        hoverBorderWidth: 2
-      },
-      line: {
-        tension: 0
-      }
-    },
-    scales: {
-      xAxes: [
-        {
-          gridLines: {
-            display: false,
-            drawBorder: false,
-            tickMarkLength: 10
-          },
-          ticks: {
-            fontColor: '#ffffff'
-          }
-        }
-      ],
-      yAxes: [
-        {
-          display: false,
-          ticks: {
-            min: 0,
-            max: 100,
-            stepSize: 0.5
-          }
-        }
-      ]
-    },
-    plugins: {
-      filler: {
-        propagate: false
-      },
-      xLabelsOnTop: {
-        active: true
-      }
-    }
-  };
+  ngDestroy$: Subject<Boolean> = new Subject();
+  options = this.buildOptions(100);
+
+  
 
 
   constructor(
-    private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,
     private translationLoader: FuseTranslationLoaderService,
+    private translate: TranslateService,
     public snackBar: MatSnackBar,
+    private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,    
     private keycloakService: KeycloakService,
   ) {
     this.translationLoader.loadTranslations(english, spanish);
+
   }
 
   ngOnInit() {
     this.windowSize = [window.innerWidth, window.innerHeight];
     this.registerCustomChartJSPlugin();
     this.loadInitialDataset();
-    setTimeout(() => this.loadDataset() , 500);
+    setTimeout(() => this.loadDataset(), 500);    
   }
 
 
   ngOnDestroy() {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.ngDestroy$.next(true);
+    this.ngDestroy$.complete();
   }
 
   loadInitialDataset() {
@@ -130,8 +85,9 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
   loadDataset() {
     this.businessReportDashboardBonusLineChartService.businessReportDashboardBonusLineChart$(this.businessId).pipe(
+      map(dataset => JSON.parse(JSON.stringify(dataset)))
     ).subscribe(
-      (dataset => this.updateDataset(dataset.slice())),
+      (dataset => this.updateDataset(dataset)),
       (error) => console.error(error),
       () => { }
     );
@@ -139,17 +95,17 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   }
 
   updateDataset(dataset) {
-    this.bonusLineChartData = this.formatDataSet(dataset);        
+    this.bonusLineChartData = this.formatDataSet(dataset);
     this.timeSpanOptions = dataset
       .sort((o1, o2) => o1.order - o2.order)
-      .map(o => o.timespan);      
+      .map(o => o.timespan);
     this.updateTimeSpan(this.timeSpanOptions[0]);
   }
 
 
   updateTimeSpan(timeSpan) {
     this.timeSpanSelected = timeSpan;
-    const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;
+    const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;    
     this.updateSubTimeSpan(options[options.length - 1]);
     this.updateChartLabels();
   }
@@ -160,6 +116,8 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       timeSpanSelected: this.timeSpanSelected,
       subTimeSpanSelected: this.subTimeSpanSelected
     });
+    
+    this.options = this.buildOptions(undefined);
   }
 
   updateChartLabels() {
@@ -178,6 +136,107 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   @HostListener('window:resize', ['$event'])
   onResize(event) {
     this.windowSize = [window.innerWidth, window.innerHeight];
+  }
+
+  
+
+  /**
+   * REcieves a dataset and format it to be chart compatible
+   */
+  formatDataSet(dataSet) {
+    const result = {
+      timeSpans: {},    
+    };
+    
+    dataSet.forEach(data => {
+      const timeSpan = data.timespan;
+      result.timeSpans[timeSpan] = {
+        labels: data.labels.map(l => this.translationLoader.getTranslate().instant(`CHART.LABELS.${timeSpan}.${l}`)),
+        datasets: {},
+        scale: data.scale,
+        datasetOptions: []
+      };
+      const datasets = data.datasets.slice();
+      datasets.sort((d1, d2) => d2.order - d1.order);
+            
+      datasets.forEach(d => {
+        result.timeSpans[timeSpan].datasetOptions.unshift(d.label);
+        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start', maxY: Math.round(Math.max(...d.data)*1.1) }];
+        console.log(`${timeSpan}=>${d.label} === ${result.timeSpans[timeSpan].datasets[d.label][0].maxY}`);        
+      })
+    });    
+    return result;
+  }
+
+  buildOptions(maxY) {
+    return {
+      chartType: 'line',
+      colors: [
+        {
+          borderColor: '#42a5f5',
+          backgroundColor: '#42a5f5',
+          pointBackgroundColor: '#1e88e5',
+          pointHoverBackgroundColor: '#1e88e5',
+          pointBorderColor: '#ffffff',
+          pointHoverBorderColor: '#ffffff'
+        }
+      ],
+      spanGaps: false,
+      legend: {
+        display: false
+      },
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          top: 32,
+          left: 32,
+          right: 32
+        }
+      },
+      elements: {
+        point: {
+          radius: 4,
+          borderWidth: 2,
+          hoverRadius: 4,
+          hoverBorderWidth: 2
+        },
+        line: {
+          tension: 0
+        }
+      },
+      scales: {
+        xAxes: [
+          {
+            gridLines: {
+              display: false,
+              drawBorder: false,
+              tickMarkLength: 10
+            },
+            ticks: {
+              fontColor: '#ffffff'
+            }
+          }
+        ],
+        yAxes: [
+          {
+            display: false,
+            ticks: {
+              min: 0,
+              max: maxY,
+              stepSize: 0.5
+            }
+          }
+        ]
+      },
+      plugins: {
+        filler: {
+          propagate: false
+        },
+        xLabelsOnTop: {
+          active: true
+        }
+      }
+    };
   }
 
   /**
@@ -244,54 +303,6 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
         });
       }
     });
-  }
-
-  /**
-   * REcieves a dataset and format it to be chart compatible
-   */
-  formatDataSet(dataSet) {    
-    const result = {
-      timeSpans: {},
-      chartType: 'line',
-      colors: [
-        {
-          borderColor: '#42a5f5',
-          backgroundColor: '#42a5f5',
-          pointBackgroundColor: '#1e88e5',
-          pointHoverBackgroundColor: '#1e88e5',
-          pointBorderColor: '#ffffff',
-          pointHoverBorderColor: '#ffffff'
-        }
-      ],
-      
-
-    };
-
-    dataSet.forEach(data => {      
-      const timeSpan = data.timespan;
-      result.timeSpans[timeSpan] = {
-        labels: data.labels,
-        datasets: {},
-        scale: data.scale,
-        datasetOptions: []
-      };      
-      const datasets = data.datasets.slice();
-      datasets.sort((d1, d2) => d2.order - d1.order);
-      datasets.forEach(d => {        
-        result.timeSpans[timeSpan].datasetOptions.push(d.label);
-        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start' }];        
-        
-        const yMax = Math.max(...d.data);      
-        console.log(`${yMax} vs ${this.options.scales.yAxes[0].ticks.max}`); 
-        if(this.options.scales.yAxes[0].ticks.max < yMax){
-          this.options = {...this.options};
-          this.options.scales.yAxes[0].ticks.max = yMax;
-        }
-        
-      })
-
-    });
-    return result;
   }
 
 }

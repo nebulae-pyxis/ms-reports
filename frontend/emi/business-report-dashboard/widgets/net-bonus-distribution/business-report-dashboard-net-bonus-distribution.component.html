@@ -1,44 +1,40 @@
 <fuse-widget [@animate]="{value:'*',params:{y:'100%'}}" class="widget" >
 
-        <!-- Front -->
-        <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
-
-                <div class="px-16 py-8 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
-                        <div class="h3">{{ !chardData ? initialData['---']['---'].title : chardData.title}}</div>
-                </div>
-
-                <div class="h-400">
-                        <ngx-charts-pie-chart *fuseIfOnDom [scheme]="chartConfigs.scheme" [results]="!chardData ? initialData['---']['---'].mainChart : chardData[timeSpanSelected][subTimeSpanSelected].mainChart"
-                                [legend]="chartConfigs.showLegend" [explodeSlices]="chartConfigs.explodeSlices"
-                                [labels]="chartConfigs.labels" [doughnut]="chartConfigs.doughnut" [gradient]="chartConfigs.gradient"
-                                (select)="chartConfigs.onSelect($event)">
-                        </ngx-charts-pie-chart>
-                </div>
-
-                <div class="py-8 mh-16 border-top" fxLayout="row" fxLayoutAlign="start center" fxLayoutWrap>
-                        <div class="py-8 border-right" fxLayout="column" fxLayoutAlign="center center" fxFlex="100"
-                                fxFlex.gt-sm="50">
-                                <span class="mat-display-1 mb-0">
-                                        {{!chardData ? initialData['---']['---'].footerLeft.count :
-                                        chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.count |
-                                        currency:'CLP':'$'}}
-                                </span>
-                                <span class="h4">{{!chardData ? initialData['---']['---'].footerLeft.title :
-                                        chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.title}}</span>
+                <!-- Front -->
+                <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
+        
+                        <div class="px-16 py-8 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
+                                <div class="h3">{{ (!chardData ? initialData['---']['---'].title : chardData.title) | translate }}</div>
                         </div>
-
-                        <div class="py-8" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" fxFlex.gt-sm="50">
-                                <span class="mat-display-1 mb-0">
-                                        {{ !chardData ? initialData['---']['---'].footerRight.count :
-                                        chardData[timeSpanSelected][subTimeSpanSelected].footerRight.count |
-                                        currency:'CLP':''}}
-                                </span>
-                                <span class="h4">{{ !chardData ? initialData['---']['---'].footerRight.title :
-                                        chardData[timeSpanSelected][subTimeSpanSelected].footerRight.title}}</span>
+        
+                        <div class="h-400">
+                                <ngx-charts-pie-chart *fuseIfOnDom [scheme]="chartConfigs.scheme" [results]="!chardData ? initialData['---']['---'].mainChart : chardData[timeSpanSelected][subTimeSpanSelected].mainChart"
+                                        [legend]="chartConfigs.showLegend" [explodeSlices]="chartConfigs.explodeSlices"
+                                        [labels]="chartConfigs.labels" [doughnut]="chartConfigs.doughnut" [gradient]="chartConfigs.gradient"
+                                        (select)="chartConfigs.onSelect($event)">
+                                </ngx-charts-pie-chart>
                         </div>
+        
+                        <div class="py-8 mh-16 border-top" fxLayout="row" fxLayoutAlign="start center" fxLayoutWrap>
+                                <div class="py-8 border-right" fxLayout="column" fxLayoutAlign="center center" fxFlex="100"
+                                        fxFlex.gt-sm="50">
+                                        <span class="mat-display-1 mb-0">
+                                                {{!chardData ? initialData['---']['---'].footerLeft.count :
+                                                chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.count |
+                                                currency:'CLP':'$'}}
+                                        </span>
+                                        <span class="h4">{{ (!chardData ? initialData['---']['---'].footerLeft.title : chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.title) | translate}}</span>
+                                </div>
+        
+                                <div class="py-8" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" fxFlex.gt-sm="50">
+                                        <span class="mat-display-1 mb-0">
+                                                {{ !chardData ? initialData['---']['---'].footerRight.count : chardData[timeSpanSelected][subTimeSpanSelected].footerRight.count | currency:'CLP':''}}
+                                        </span>
+                                        <span class="h4">{{ (!chardData ? initialData['---']['---'].footerRight.title :chardData[timeSpanSelected][subTimeSpanSelected].footerRight.title) | translate }}</span>
+                                </div>
+                        </div>
+        
                 </div>
-
-        </div>
-        <!-- / Front -->
-
-</fuse-widget>
+                <!-- / Front -->
+        
+        </fuse-widget>
