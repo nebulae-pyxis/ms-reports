@@ -53,7 +53,7 @@ export const locale = {
           MAY: 'May',
           JUN: 'Jun',
           JUL: 'Jul',
-          AGO: 'Ago',
+          AUG: 'Aug',
           SEP: 'Sep',
           OCT: 'Oct',
           NOV: 'Nov',

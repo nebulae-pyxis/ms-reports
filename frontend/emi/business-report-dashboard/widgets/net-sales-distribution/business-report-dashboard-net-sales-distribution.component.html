@@ -4,7 +4,7 @@
         <div class="fuse-widget-front mat-white-bg mat-elevation-z2">
 
                 <div class="px-16 py-8 border-bottom" fxLayout="row" fxLayoutAlign="space-between center">
-                        <div class="h3">{{ (!chardData ? initialData['---']['---'].title : chardData.title) | translate }}</div>
+                        <div class="h3">{{ 'SALES_DISTRIBUTION.'+(!chardData ? initialData['---']['---'].title : chardData.title) | translate }}</div>
                 </div>
 
                 <div class="h-400">
@@ -23,14 +23,14 @@
                                         chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.count |
                                         currency:'CLP':'$'}}
                                 </span>
-                                <span class="h4">{{ (!chardData ? initialData['---']['---'].footerLeft.title : chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.title) | translate}}</span>
+                                <span class="h4">{{ 'SALES_DISTRIBUTION.'+(!chardData ? initialData['---']['---'].footerLeft.title : chardData[timeSpanSelected][subTimeSpanSelected].footerLeft.title) | translate}}</span>
                         </div>
 
                         <div class="py-8" fxLayout="column" fxLayoutAlign="center center" fxFlex="100" fxFlex.gt-sm="50">
                                 <span class="mat-display-1 mb-0">
                                         {{ !chardData ? initialData['---']['---'].footerRight.count : chardData[timeSpanSelected][subTimeSpanSelected].footerRight.count | currency:'CLP':''}}
                                 </span>
-                                <span class="h4">{{ (!chardData ? initialData['---']['---'].footerRight.title :chardData[timeSpanSelected][subTimeSpanSelected].footerRight.title) | translate }}</span>
+                                <span class="h4">{{ 'SALES_DISTRIBUTION.'+(!chardData ? initialData['---']['---'].footerRight.title :chardData[timeSpanSelected][subTimeSpanSelected].footerRight.title) | translate }}</span>
                         </div>
                 </div>
 

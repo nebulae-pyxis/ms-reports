@@ -6,7 +6,7 @@ import { fuseAnimations } from '../../../../../core/animations';
 
 ////////// RXJS //////////
 import { of, combineLatest, Observable, forkJoin, concat, Subscription, Subject } from 'rxjs';
-import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay } from 'rxjs/operators';
+import { mergeMap, debounceTime, distinctUntilChanged, startWith, tap, map, delay , takeUntil} from 'rxjs/operators';
 
 //////////// i18n ////////////
 import { FuseTranslationLoaderService } from '../../../../../core/services/translation-loader.service';
@@ -41,14 +41,14 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
   ngDestroy$: Subject<Boolean> = new Subject();
   options = this.buildOptions(100);
 
-  
+
 
 
   constructor(
     private translationLoader: FuseTranslationLoaderService,
     private translate: TranslateService,
     public snackBar: MatSnackBar,
-    private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,    
+    private businessReportDashboardBonusLineChartService: BusinessReportDashboardBonusLineChartService,
     private keycloakService: KeycloakService,
   ) {
     this.translationLoader.loadTranslations(english, spanish);
@@ -59,7 +59,12 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.windowSize = [window.innerWidth, window.innerHeight];
     this.registerCustomChartJSPlugin();
     this.loadInitialDataset();
-    setTimeout(() => this.loadDataset(), 500);    
+    setTimeout(() => this.loadDataset(), 500);
+    this.translate.onLangChange
+      .pipe(
+        takeUntil(this.ngDestroy$)
+      )
+      .subscribe((evt) => {console.log(evt);this.loadDataset();  }, err => console.error(err), () => { })
   }
 
 
@@ -105,7 +110,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
 
   updateTimeSpan(timeSpan) {
     this.timeSpanSelected = timeSpan;
-    const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;    
+    const options = this.bonusLineChartData.timeSpans[this.timeSpanSelected].datasetOptions;
     this.updateSubTimeSpan(options[options.length - 1]);
     this.updateChartLabels();
   }
@@ -116,14 +121,15 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       timeSpanSelected: this.timeSpanSelected,
       subTimeSpanSelected: this.subTimeSpanSelected
     });
-    
+
     this.options = this.buildOptions(undefined);
   }
 
   updateChartLabels() {
     //This is the only work-around to force labels updates
     this.chartLabels.length = 0;
-    this.bonusLineChartData.timeSpans[this.timeSpanSelected].labels.slice().forEach(l => this.chartLabels.push(l))
+    this.bonusLineChartData.timeSpans[this.timeSpanSelected].labels.slice().forEach(l => this.chartLabels.push(l));
+    console.log(this.chartLabels);
   }
 
 
@@ -138,16 +144,16 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     this.windowSize = [window.innerWidth, window.innerHeight];
   }
 
-  
+
 
   /**
    * REcieves a dataset and format it to be chart compatible
    */
   formatDataSet(dataSet) {
     const result = {
-      timeSpans: {},    
+      timeSpans: {},
     };
-    
+
     dataSet.forEach(data => {
       const timeSpan = data.timespan;
       result.timeSpans[timeSpan] = {
@@ -158,13 +164,13 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
       };
       const datasets = data.datasets.slice();
       datasets.sort((d1, d2) => d2.order - d1.order);
-            
+
       datasets.forEach(d => {
         result.timeSpans[timeSpan].datasetOptions.unshift(d.label);
-        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start', maxY: Math.round(Math.max(...d.data)*1.1) }];
-        console.log(`${timeSpan}=>${d.label} === ${result.timeSpans[timeSpan].datasets[d.label][0].maxY}`);        
+        result.timeSpans[timeSpan].datasets[d.label] = [{ label: 'Bonus', data: d.data, fill: 'start', maxY: Math.round(Math.max(...d.data) * 1.1) }];
+        //console.log(`${timeSpan}=>${d.label} === ${result.timeSpans[timeSpan].datasets[d.label][0].maxY}`);
       })
-    });    
+    });
     return result;
   }
 

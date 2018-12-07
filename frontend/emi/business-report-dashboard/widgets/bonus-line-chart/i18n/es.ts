@@ -1,5 +1,5 @@
 export const locale = {
-  lang: 'en',
+  lang: 'es',
   data: {
     TITLE: 'Comisión',
     DESCRIPTION : 'Utilidades generadas por ventas',
