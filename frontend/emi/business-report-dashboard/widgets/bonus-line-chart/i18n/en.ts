@@ -4,9 +4,9 @@ export const locale = {
     TITLE: 'Bonus',
     DESCRIPTION : 'Sales Revenue',
     TIMESPANS: {
-      YEAR: 'Anual',
-      MONTH: 'Mensual',
-      WEEK: 'Semanal',
+      YEAR: 'Annually',
+      MONTH: 'Monthly',
+      WEEK: 'Weekly',
     },
     SUBTIMESPANS: {
       MON: 'Mon',
