@@ -21,7 +21,7 @@
                 "icon": "library_books",
                 "translate": {
                     "en": "Reports",
-                    "es": "reportes"
+                    "es": "Reportes"
                 },
                 "priority": 1000
             }
@@ -34,7 +34,7 @@
                 "icon": "map",
                 "translate": {
                     "en": "Coverage",
-                    "es": "cobertura"
+                    "es": "Cobertura"
                 },
                 "navURL": "/pos-coverage-report",
                 "path": "pos-coverage-report",

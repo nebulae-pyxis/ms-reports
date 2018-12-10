@@ -24,6 +24,7 @@ export const locale = {
         LAST_UPDATE: 'Última venta',
         BUSINESS_NAME: 'Unidad de negocio'
       }
-    }
+    },
+    ALL_BUSINESSES: 'Todas las unidades'
   }
 };

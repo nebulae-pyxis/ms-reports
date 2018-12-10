@@ -24,6 +24,7 @@ export const locale = {
         LAST_UPDATE: 'Last sale',
         BUSINESS_NAME: 'Business Unit'
       }
-    }
+    },
+    ALL_BUSINESSES: 'All business'
   }
 };
