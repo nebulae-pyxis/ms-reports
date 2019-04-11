@@ -88,11 +88,11 @@ type BusinessReportDashboardWalletStatusCardsPocket{
 
 
 type Query{
-  businessReportDashboardBonusLineChart(businessId: String): [BusinessReportDashboardBonusLineChartTimeDataset] @requireAuth
-  businessReportDashboardNetBonusDistribution(businessId: String): [BusinessReportDashboardNetBonusDistributionTimeDataSet] @requireAuth
-  businessReportDashboardNetSalesDistribution(businessId: String): [BusinessReportDashboardNetSalesDistributionTimeDataSet] @requireAuth
-  businessReportDashboardSalesOverview(businessId: String): [BusinessReportDashboardSalesOverviewTimeDataSet] @requireAuth
-  businessReportDashboardWalletStatusCards(businessId: String): BusinessReportDashboardWalletStatusCards @requireAuth
+  businessReportDashboardBonusLineChart(businessId: String): [BusinessReportDashboardBonusLineChartTimeDataset]
+  businessReportDashboardNetBonusDistribution(businessId: String): [BusinessReportDashboardNetBonusDistributionTimeDataSet]
+  businessReportDashboardNetSalesDistribution(businessId: String): [BusinessReportDashboardNetSalesDistributionTimeDataSet]
+  businessReportDashboardSalesOverview(businessId: String): [BusinessReportDashboardSalesOverviewTimeDataSet]
+  businessReportDashboardWalletStatusCards(businessId: String): BusinessReportDashboardWalletStatusCards
 
 }
 

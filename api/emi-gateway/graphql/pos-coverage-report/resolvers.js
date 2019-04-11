@@ -1,23 +1,27 @@
 const withFilter = require("graphql-subscriptions").withFilter;
 const PubSub = require("graphql-subscriptions").PubSub;
 const pubsub = new PubSub();
-const Rx = require("rxjs");
 const broker = require("../../broker/BrokerFactory")();
+const {handleError$} = require('../../tools/GraphqlResponseTools');
+
+const { of } = require('rxjs');
+const { map, mergeMap, catchError } = require('rxjs/operators');
 
 function getResponseFromBackEnd$(response) {
-    return Rx.Observable.of(response)
-        .map(resp => {
+    return of(response)
+    .pipe(
+        map(resp => {
             if (resp.result.code != 200) {
                 const err = new Error();
                 err.name = 'Error';
                 err.message = resp.result.error;
-                // this[Symbol()] = resp.result.error;
                 Error.captureStackTrace(err, 'Error');
                 throw err;
             }
             return resp.data;
-        });
-}
+        })
+    );
+  }
 
 module.exports = {
 
@@ -33,8 +37,9 @@ module.exports = {
                     "emigateway.graphql.query.getReportsBusinesses",
                     { root, args, jwt: context.encodedToken },
                     2000
+                ).pipe(
+                    mergeMap(response => getResponseFromBackEnd$(response))
                 )
-                .mergeMap(response => getResponseFromBackEnd$(response))
                 .toPromise();
         },
         ReportPosItems(root, args, context) {
@@ -44,9 +49,9 @@ module.exports = {
                     "emigateway.graphql.query.getCoveragePos",
                     { root, args, jwt: context.encodedToken },
                     2000
-                )
-                .mergeMap(response => getResponseFromBackEnd$(response))
-                .toPromise();
+                ).pipe(
+                    mergeMap(response => getResponseFromBackEnd$(response))
+                ).toPromise();
         }
     },
 
