@@ -129,7 +129,7 @@ export class BusinessReportDashboardBonusLineChartComponent implements OnInit, O
     //This is the only work-around to force labels updates
     this.chartLabels.length = 0;
     this.bonusLineChartData.timeSpans[this.timeSpanSelected].labels.slice().forEach(l => this.chartLabels.push(l));
-    console.log(this.chartLabels);
+    //console.log(this.chartLabels);
   }
 
 
