@@ -6,7 +6,7 @@ const RoleValidator = require('../../tools/RoleValidator');
 const {handleError$} = require('../../tools/GraphqlResponseTools');
 
 const { of } = require('rxjs');
-const { map, mergeMap, catchError } = require('rxjs/operators');
+const { map, mergeMap, catchError, switchMapTo } = require('rxjs/operators');
 const INTERNAL_SERVER_ERROR_CODE = 18001;
 const USERS_PERMISSION_DENIED_ERROR_CODE = 18002;
 
